@@ -270,11 +270,17 @@
         function generateQuestion() {
             const selectedValues = Array.from(document.querySelectorAll('.table-checkbox:checked')).map(cb => parseInt(cb.value, 10));
             const unsolvedCells = [];
+            
             selectedValues.forEach(num1 => {
-                for (let num2 = 1; num2 <= 10; num2++) {
-                    const cell = document.querySelector(`.cell[data-value="${num1 * num2}"]`);
-                    if (!cell.classList.contains('solved')) {
-                        unsolvedCells.push({ num1, num2 });
+                for (let col = 1; col <= 10; col++) {
+                    const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${num1}) td:nth-child(${col + 1})`);
+                    if (cell && !cell.classList.contains('solved')) {
+                        unsolvedCells.push({ 
+                            row: num1,     // Rækken er den valgte talrække
+                            col: col + 1,  // Kolonnen (+1 for at kompensere for th)
+                            num1: col,     // Første faktor (fra kolonnen)
+                            num2: num1     // Anden faktor (fra rækken)
+                        });
                     }
                 }
             });
@@ -291,20 +297,18 @@
             currentQuestion.answer = currentQuestion.num1 * currentQuestion.num2;
             document.getElementById('question').textContent = `${currentQuestion.num1} x ${currentQuestion.num2} = `;
             document.getElementById('answer').value = '';
-            document.getElementById('answer').disabled = false; // Gør inputfeltet redigerbart igen
+            document.getElementById('answer').disabled = false;
             document.getElementById('feedback').textContent = '';
             document.getElementById('answer').focus();
         }
 
         function checkAnswer() {
             const userAnswer = parseInt(document.getElementById('answer').value, 10);
-            const row = currentQuestion.num2; // Byt om på X og Y
-            const col = currentQuestion.num1; // Byt om på X og Y
-            const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${row}) td:nth-child(${col + 1})`);
+            const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${currentQuestion.row}) td:nth-child(${currentQuestion.col})`);
             if (userAnswer === currentQuestion.answer) {
                 cell.textContent = currentQuestion.answer;
                 cell.classList.add('correct', 'solved');
-                generateQuestion(); // Generer næste spørgsmål med det samme
+                generateQuestion();
             } else {
                 cell.classList.add('incorrect');
                 setTimeout(() => cell.classList.remove('incorrect'), 500);
