@@ -87,8 +87,8 @@
 </head>
 <body>
     <h1>Multiplikationstabel 1-10</h1>
-    <div id="timer">00:00</div>
-    <button onclick="startGame()">Start Spillet</button>
+    <div id="timer">00:00.00</div>
+    <button id="gameToggle" onclick="toggleGame()">Start Spillet</button>
     <button onclick="toggleCells()">Vis/Skjul Alle Felter</button>
     <table id="multiplicationTable">
         <thead>
@@ -253,11 +253,24 @@
         let cellsVisible = false;
         let timerInterval;
         let startTime;
+        let gameActive = false;
+
+        function toggleGame() {
+            if (gameActive) {
+                stopGame();
+                document.getElementById('gameToggle').textContent = 'Start Spillet';
+            } else {
+                startGame();
+                document.getElementById('gameToggle').textContent = 'Stop Spillet';
+            }
+        }
 
         function startGame() {
+            if (gameActive) return;
+            gameActive = true;
             startTime = Date.now();
             if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(updateTimer, 10); // Update every 10ms instead of 1000ms
+            timerInterval = setInterval(updateTimer, 10);
             
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
@@ -267,7 +280,26 @@
             });
             document.getElementById('gameRow').classList.remove('hidden');
             document.getElementById('answer').disabled = false;
+            document.getElementById('feedback').textContent = '';
             generateQuestion();
+        }
+
+        function stopGame() {
+            if (!gameActive) return;
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.textContent = cell.getAttribute('data-value');
+                cell.classList.remove('solved', 'correct', 'incorrect');
+            });
+            
+            document.getElementById('gameRow').classList.add('hidden');
+            document.getElementById('question').textContent = '';
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').disabled = true;
+            document.getElementById('feedback').textContent = 'Spillet er stoppet';
         }
 
         function updateTimer() {
@@ -290,6 +322,7 @@
         }
 
         function generateQuestion() {
+            if (!gameActive) return;
             const selectedValues = Array.from(document.querySelectorAll('.table-checkbox:checked')).map(cb => parseInt(cb.value, 10));
             const unsolvedCells = [];
             
@@ -327,6 +360,7 @@
         }
 
         function checkAnswer() {
+            if (!gameActive) return;
             const userAnswer = parseInt(document.getElementById('answer').value, 10);
             const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${currentQuestion.row}) td:nth-child(${currentQuestion.col})`);
             if (userAnswer === currentQuestion.answer) {
