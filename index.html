@@ -51,6 +51,7 @@
         }
         .cell {
             transition: background-color 0.3s, transform 0.3s;
+            cursor: default;
         }
         .cell.correct {
             background-color: #d4edda;
@@ -62,6 +63,13 @@
         }
         .cell.solved {
             background-color: #d4edda;
+        }
+        .cell.hidden-value {
+            cursor: pointer;
+            background-color: #f8f9fa;
+        }
+        .cell.hidden-value:hover {
+            background-color: #e9ecef;
         }
         #feedback {
             font-size: 18px;
@@ -291,7 +299,9 @@
             
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
-                cell.textContent = cell.getAttribute('data-value');
+                if (cell.textContent === '?') {
+                    cell.classList.add('hidden-value');
+                }
                 cell.classList.remove('solved', 'correct', 'incorrect');
             });
             
@@ -317,6 +327,9 @@
             cells.forEach(cell => {
                 if (!cell.classList.contains('solved')) {
                     cell.textContent = cellsVisible ? cell.getAttribute('data-value') : '?';
+                    if (!gameActive) {
+                        cell.classList.toggle('hidden-value', !cellsVisible);
+                    }
                 }
             });
         }
@@ -379,6 +392,27 @@
                 checkAnswer();
             }
         }
+
+        // Add new function for cell click handling
+        function initializeCellClicks() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.addEventListener('click', () => {
+                    if (!gameActive && !cell.classList.contains('solved')) {
+                        if (cell.textContent === '?') {
+                            cell.textContent = cell.getAttribute('data-value');
+                            cell.classList.remove('hidden-value');
+                        } else {
+                            cell.textContent = '?';
+                            cell.classList.add('hidden-value');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Initialize cell clicks when page loads
+        document.addEventListener('DOMContentLoaded', initializeCellClicks);
     </script>
 </body>
 </html>
