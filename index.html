@@ -77,10 +77,17 @@
             width: 100px;
             margin: 10px;
         }
+        #timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <h1>Multiplikationstabel 1-10</h1>
+    <div id="timer">00:00</div>
     <button onclick="startGame()">Start Spillet</button>
     <button onclick="toggleCells()">Vis/Skjul Alle Felter</button>
     <table id="multiplicationTable">
@@ -244,17 +251,32 @@
     <script>
         let currentQuestion = {};
         let cellsVisible = false;
+        let timerInterval;
+        let startTime;
 
         function startGame() {
+            startTime = Date.now();
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 10); // Update every 10ms instead of 1000ms
+            
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
                 cell.textContent = '?';
-                cell.classList.remove('solved', 'correct', 'incorrect'); // Fjern alle farveklasser
+                cell.classList.remove('solved', 'correct', 'incorrect');
                 cell.classList.remove('hidden');
             });
             document.getElementById('gameRow').classList.remove('hidden');
-            document.getElementById('answer').disabled = false; // Gør inputfeltet redigerbart igen
+            document.getElementById('answer').disabled = false;
             generateQuestion();
+        }
+
+        function updateTimer() {
+            const elapsed = Date.now() - startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            const milliseconds = Math.floor((elapsed % 1000) / 10); // Get 2 digits of milliseconds
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
         }
 
         function toggleCells() {
@@ -286,9 +308,11 @@
             });
 
             if (unsolvedCells.length === 0) {
-                document.getElementById('feedback').textContent = 'Alle opgaver er løst!';
+                const finalTime = document.getElementById('timer').textContent;
+                document.getElementById('feedback').textContent = `Alle opgaver er løst! Din tid: ${finalTime}`;
                 document.getElementById('question').textContent = '';
                 document.getElementById('answer').disabled = true;
+                clearInterval(timerInterval); // Stop timer when finished
                 return;
             }
 
