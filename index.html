@@ -292,13 +292,110 @@
             box-shadow: 0 8px 16px rgba(108, 99, 255, 0.1);
         }
 
-        .game-controls #question {
-            margin: 10px 0;
+        .game-input-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .game-input-group.active {
+            opacity: 1;
+            height: auto;
+            margin: 20px 0;
+        }
+
+        .game-input-group #question {
+            font-size: 32px;
+            margin: 0;
+            min-width: 120px;
+        }
+
+        .game-input-group #answer {
+            width: 120px;
+            margin: 0;
+            height: 48px;
+            font-size: 24px;
+            border: 2px solid var(--primary-color);
+            transition: all 0.2s ease;
+        }
+
+        .game-input-group #answer:focus {
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.3);
+            outline: none;
+        }
+
+        #gameToggle {
+            width: auto;
+            min-width: 200px;
+            margin: 0 auto;
+            display: block;
+            background: linear-gradient(45deg, var(--primary-color), #8B80FF);
+        }
+
+        #feedback {
+            padding: 10px;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        #feedback:not(:empty) {
+            background: rgba(108, 99, 255, 0.1);
+            margin: 15px 0;
         }
 
         @media screen and (max-width: 600px) {
             .game-controls {
                 padding: 15px;
+                margin: 10px;
+            }
+
+            .game-input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .game-input-group #question {
+                font-size: 24px;
+            }
+
+            .game-input-group #answer {
+                width: calc(100% - 16px);
+                height: 40px;
+                font-size: 20px;
+            }
+
+            #gameToggle {
+                width: calc(100% - 16px);
+                margin: 8px;
+            }
+
+            #feedback {
+                font-size: 16px;
+                padding: 8px;
+            }
+        }
+
+        @media screen and (max-width: 375px) {
+            .game-controls {
+                padding: 10px;
+                margin: 5px;
+            }
+
+            .game-input-group #question {
+                font-size: 20px;
+            }
+
+            .game-input-group #answer {
+                height: 36px;
+                font-size: 18px;
             }
         }
     </style>
@@ -306,7 +403,6 @@
 <body>
     <h1>Multiplikationstabel 1-10</h1>
     <div id="timer">00:00.00</div>
-    <button id="gameToggle" onclick="toggleGame()">Start Spillet</button>
     <button onclick="toggleCells()">Vis/Skjul Alle Felter</button>
     <div class="table-container">
         <table id="multiplicationTable">
@@ -460,12 +556,18 @@
         </table>
     </div>
 
-    <!-- Add new game controls container -->
-    <div id="gameControls" class="game-controls hidden">
-        <span id="question"></span>
-        <input type="number" id="answer" placeholder="Indtast dit svar" onkeydown="handleKeyDown(event)">
-        <button onclick="checkAnswer()">Tjek svar</button>
-        <p id="feedback"></p>
+    <div id="gameControls" class="game-controls">
+        <button id="gameToggle" onclick="toggleGame()">Start Spillet</button>
+        <div id="gameInputGroup" class="game-input-group">
+            <span id="question"></span>
+            <input type="number" 
+                   id="answer" 
+                   placeholder="Svar" 
+                   onkeydown="handleKeyDown(event)"
+                   aria-label="Dit svar">
+            <button onclick="checkAnswer()">Tjek</button>
+        </div>
+        <p id="feedback" role="status" aria-live="polite"></p>
     </div>
 
     <script>
@@ -501,7 +603,7 @@
                     cell.classList.add('hidden-value');
                 }
             });
-            document.getElementById('gameControls').classList.remove('hidden');
+            document.getElementById('gameInputGroup').classList.add('active');
             document.getElementById('answer').disabled = false;
             document.getElementById('feedback').textContent = '';
             generateQuestion();
@@ -520,7 +622,7 @@
                 cell.classList.remove('solved', 'correct', 'incorrect');
             });
             
-            document.getElementById('gameControls').classList.add('hidden');
+            document.getElementById('gameInputGroup').classList.remove('active');
             document.getElementById('question').textContent = '';
             document.getElementById('answer').value = '';
             document.getElementById('answer').disabled = true;
