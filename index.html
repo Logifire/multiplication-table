@@ -88,12 +88,13 @@
             transition: all 0.3s ease;
             border-radius: 8px;
             position: relative;
+            transform-origin: center; /* Ensures rotation happens from center */
         }
 
         .cell.correct {
             background-color: #4CAF50;
             color: white;
-            transform: scale(1.1) rotate(360deg);
+            transform: rotate(360deg); /* Removed scale(1.1) */
         }
 
         .cell.incorrect {
