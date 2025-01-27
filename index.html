@@ -398,7 +398,56 @@
                 font-size: 18px;
             }
         }
+
+        /* Add new animations */
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px var(--success-color); }
+            50% { box-shadow: 0 0 20px var(--success-color); }
+            100% { box-shadow: 0 0 5px var(--success-color); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .cell.correct {
+            animation: rotate360 0.5s ease-out, glow 1s ease-in-out;
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        #question.active {
+            animation: pulse 1s infinite;
+        }
+
+        .achievement-banner {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            background: linear-gradient(45deg, var(--primary-color), #8B80FF);
+            color: white;
+            padding: 15px 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .achievement-banner.show {
+            transform: translateX(-50%) translateY(0);
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Add sound effects -->
+    <audio id="correctSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="completionSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" type="audio/mpeg">
+    </audio>
 </head>
 <body>
     <h1>Multiplikationstabel 1-10</h1>
@@ -588,24 +637,40 @@
             }
         }
 
+        function resetGame() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.textContent = cell.getAttribute('data-value');
+                cell.classList.remove('hidden-value', 'correct', 'incorrect', 'solved');
+            });
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('question').textContent = '';
+            document.getElementById('answer').value = '';
+            document.getElementById('timer').textContent = '00:00.00';
+            document.getElementById('gameInputGroup').classList.remove('active');
+            document.getElementById('gameToggle').textContent = 'Start Spillet';
+            gameActive = false;
+            cellsVisible = true;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        }
+
         function startGame() {
-            if (gameActive) return;
+            resetGame(); // Only reset when explicitly starting
             gameActive = true;
             startTime = Date.now();
-            if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(updateTimer, 10);
             
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
-                if (!cell.classList.contains('solved')) {
-                    cell.textContent = '?';
-                    cell.classList.remove('correct', 'incorrect');
-                    cell.classList.add('hidden-value');
-                }
+                cell.textContent = '?';
+                cell.classList.add('hidden-value');
             });
+            
+            document.getElementById('gameToggle').textContent = 'Stop Spillet';
             document.getElementById('gameInputGroup').classList.add('active');
             document.getElementById('answer').disabled = false;
-            document.getElementById('feedback').textContent = '';
             generateQuestion();
         }
 
@@ -670,10 +735,19 @@
 
             if (unsolvedCells.length === 0) {
                 const finalTime = document.getElementById('timer').textContent;
-                document.getElementById('feedback').textContent = `Alle opgaver er løst! Din tid: ${finalTime}`;
-                document.getElementById('question').textContent = '';
+                document.getElementById('completionSound').play();
+                showAchievementBanner(`Fantastisk! Du klarede det på ${finalTime}!`);
+                fireConfetti();
+                
+                // Update UI for completion state
+                document.getElementById('gameInputGroup').classList.remove('active');
+                document.getElementById('answer').value = '';
                 document.getElementById('answer').disabled = true;
-                clearInterval(timerInterval); // Stop timer when finished
+                document.getElementById('gameToggle').textContent = 'Start Nyt Spil';
+                document.getElementById('feedback').textContent = `Alle opgaver er løst! Din tid: ${finalTime}`;
+                
+                gameActive = false;
+                clearInterval(timerInterval);
                 return;
             }
 
@@ -693,6 +767,19 @@
             const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${currentQuestion.row}) td:nth-child(${currentQuestion.col})`);
             
             if (userAnswer === currentQuestion.answer) {
+                // Play sound
+                document.getElementById('correctSound').play();
+
+                // Create particles
+                const rect = cell.getBoundingClientRect();
+                for (let i = 0; i < 5; i++) {
+                    createNumberParticle(
+                        rect.left + rect.width / 2,
+                        rect.top + rect.height / 2,
+                        userAnswer
+                    );
+                }
+
                 cell.textContent = currentQuestion.answer;
                 cell.classList.remove('hidden-value', 'incorrect');
                 cell.classList.add('correct', 'solved');
@@ -709,6 +796,57 @@
             if (event.key === 'Enter') {
                 checkAnswer();
             }
+        }
+
+        // Add new function for number particles
+        function createNumberParticle(x, y, number) {
+            const particle = document.createElement('div');
+            particle.textContent = number;
+            particle.style.cssText = `
+                position: fixed;
+                left: ${x}px;
+                top: ${y}px;
+                font-size: 24px;
+                color: var(--success-color);
+                pointer-events: none;
+                z-index: 1000;
+            `;
+            document.body.appendChild(particle);
+
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 2 + Math.random() * 2;
+            let opacity = 1;
+
+            function animate() {
+                const dx = Math.cos(angle) * velocity;
+                const dy = Math.sin(angle) * velocity - 2; // Add gravity
+                x += dx;
+                y += dy;
+                opacity -= 0.02;
+
+                particle.style.transform = `translate(${x}px, ${y}px)`;
+                particle.style.opacity = opacity;
+
+                if (opacity > 0) {
+                    requestAnimationFrame(animate);
+                } else {
+                    particle.remove();
+                }
+            }
+            animate();
+        }
+
+        function showAchievementBanner(message) {
+            const banner = document.createElement('div');
+            banner.className = 'achievement-banner';
+            banner.textContent = message;
+            document.body.appendChild(banner);
+            
+            setTimeout(() => banner.classList.add('show'), 100);
+            setTimeout(() => {
+                banner.classList.remove('show');
+                setTimeout(() => banner.remove(), 500);
+            }, 3000);
         }
 
         // Add new function for cell click handling
@@ -737,6 +875,48 @@
                 cell.classList.remove('hidden-value'); // Ensure cells are visible
             });
             cellsVisible = true; // Match the visible state
+        }
+
+        function fireConfetti() {
+            function createFirework() {
+                const colors = ['#6C63FF', '#FF6B6B', '#4CAF50', '#FDD835'];
+                
+                // Launch position (random along bottom)
+                const startX = 0.1 + Math.random() * 0.8; // 10% to 90% of screen width
+                
+                // First launch the firework up
+                confetti({
+                    particleCount: 1,
+                    startVelocity: 60,
+                    gravity: 1,
+                    spread: 0,
+                    origin: { x: startX, y: 1 },
+                    colors: [colors[Math.floor(Math.random() * colors.length)]],
+                    ticks: 200,
+                    scalar: 1
+                });
+
+                // Then create the explosion
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 100,
+                        startVelocity: 30,
+                        gravity: 0.5,
+                        spread: 360,
+                        origin: { x: startX, y: 0.5 },
+                        colors: colors,
+                        ticks: 200,
+                        scalar: 1.2,
+                        shapes: ['circle']
+                    });
+                }, 1000);
+            }
+
+            // Launch multiple fireworks with slight delays
+            let fireworkCount = 5;
+            for(let i = 0; i < fireworkCount; i++) {
+                setTimeout(createFirework, i * 600);
+            }
         }
 
         // Initialize cell clicks when page loads
