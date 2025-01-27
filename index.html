@@ -761,29 +761,51 @@
             document.getElementById('answer').focus();
         }
 
+        // Add sound management
+        let lastSoundTime = 0;
+        const SOUND_COOLDOWN = 200; // Minimum time between sounds in milliseconds
+
+        // Modify sound handling to be non-blocking
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 0.3; // Lower volume for less intrusive feedback
+                const playPromise = sound.play();
+                if (playPromise) {
+                    playPromise.catch(() => {}); // Ignore any play errors
+                }
+            }
+        }
+
         function checkAnswer() {
             if (!gameActive) return;
             const userAnswer = parseInt(document.getElementById('answer').value, 10);
             const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${currentQuestion.row}) td:nth-child(${currentQuestion.col})`);
             
             if (userAnswer === currentQuestion.answer) {
-                // Play sound
-                document.getElementById('correctSound').play();
-
-                // Create particles
-                const rect = cell.getBoundingClientRect();
-                for (let i = 0; i < 5; i++) {
-                    createNumberParticle(
-                        rect.left + rect.width / 2,
-                        rect.top + rect.height / 2,
-                        userAnswer
-                    );
-                }
-
+                // Update UI immediately
                 cell.textContent = currentQuestion.answer;
                 cell.classList.remove('hidden-value', 'incorrect');
                 cell.classList.add('correct', 'solved');
                 document.getElementById('answer').value = '';
+
+                // Play sound in background
+                playSound('correctSound');
+
+                // Create particles without blocking
+                requestAnimationFrame(() => {
+                    const rect = cell.getBoundingClientRect();
+                    for (let i = 0; i < 5; i++) {
+                        createNumberParticle(
+                            rect.left + rect.width / 2,
+                            rect.top + rect.height / 2,
+                            userAnswer
+                        );
+                    }
+                });
+
+                // Generate next question immediately
                 generateQuestion();
             } else {
                 cell.classList.add('incorrect');
@@ -791,6 +813,13 @@
                 document.getElementById('answer').select();
             }
         }
+
+        // Add input handling optimization
+        document.getElementById('answer').addEventListener('input', function(e) {
+            if (this.value.length >= 2) { // Auto-submit for 2 or more digits
+                checkAnswer();
+            }
+        });
 
         function handleKeyDown(event) {
             if (event.key === 'Enter') {
