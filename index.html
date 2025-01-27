@@ -58,23 +58,26 @@
             border-collapse: separate;
             border-spacing: 2px;
             width: 100%;
-            max-width: 500px;
+            max-width: 800px;  /* Increased max-width to accommodate fixed cell sizes */
             background: white;
             border-radius: var(--border-radius);
             box-shadow: 0 8px 16px rgba(108, 99, 255, 0.1);
             overflow: hidden;
+            table-layout: fixed;  /* Added fixed table layout */
         }
 
         th, td {
             padding: 12px 8px;
             font-size: 16px;
             border: none;
+            width: 40px;  /* Added fixed width */
+            height: 40px; /* Added fixed height */
+            text-align: center;
+            vertical-align: middle;
         }
 
-        th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: bold;
+        th:first-child {
+            width: 60px;  /* Slightly wider for the row headers */
         }
 
         .cell {
@@ -149,7 +152,14 @@
             }
 
             th, td {
-                padding: 8px 4px;
+                padding: 6px 4px;
+                width: 30px;  /* Smaller width for mobile */
+                height: 30px; /* Smaller height for mobile */
+                font-size: 12px;
+            }
+
+            th:first-child {
+                width: 45px;  /* Adjusted for mobile */
             }
 
             button {
