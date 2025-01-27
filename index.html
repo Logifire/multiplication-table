@@ -56,28 +56,32 @@
         table {
             margin: 20px auto;
             border-collapse: separate;
-            border-spacing: 2px;
+            border-spacing: 1px;  /* Reduced spacing */
             width: 100%;
-            max-width: 800px;  /* Increased max-width to accommodate fixed cell sizes */
+            max-width: 800px;
             background: white;
             border-radius: var(--border-radius);
             box-shadow: 0 8px 16px rgba(108, 99, 255, 0.1);
-            overflow: hidden;
-            table-layout: fixed;  /* Added fixed table layout */
+            overflow-x: auto;  /* Allow horizontal scroll if needed */
+            table-layout: fixed;
         }
 
         th, td {
-            padding: 12px 8px;
-            font-size: 16px;
+            padding: 8px 4px;
+            font-size: 14px;
             border: none;
-            width: 40px;  /* Added fixed width */
-            height: 40px; /* Added fixed height */
+            width: 35px;  /* Slightly reduced width */
+            height: 35px; /* Slightly reduced height */
             text-align: center;
             vertical-align: middle;
         }
 
         th:first-child {
-            width: 60px;  /* Slightly wider for the row headers */
+            width: 50px;  /* Reduced width for row headers */
+            position: sticky;  /* Keep first column visible */
+            left: 0;
+            background: white;
+            z-index: 1;
         }
 
         .cell {
@@ -179,6 +183,58 @@
             }
         }
 
+        @media screen and (max-width: 375px) {
+            body {
+                padding: 5px;  /* Reduced padding */
+            }
+
+            h1 {
+                font-size: 20px;  /* Smaller heading */
+                margin-bottom: 10px;
+            }
+
+            table {
+                border-spacing: 0px;
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 4px 2px;
+                width: 28px;   /* Smaller width for iPhone SE */
+                height: 28px;  /* Smaller height for iPhone SE */
+                font-size: 11px;
+            }
+
+            th:first-child {
+                width: 40px;
+            }
+
+            .table-checkbox {
+                width: 16px;
+                height: 16px;
+            }
+
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+                margin: 4px;
+            }
+
+            #timer {
+                font-size: 24px;
+            }
+
+            #question {
+                font-size: 20px;
+            }
+
+            #answer {
+                padding: 8px;
+                font-size: 16px;
+                width: 80px;
+            }
+        }
+
         /* Fun animations */
         @keyframes pop {
             0% { transform: scale(0.8); opacity: 0; }
@@ -213,6 +269,15 @@
         .hidden-value:hover:after {
             transform: scale(1);
         }
+
+        /* Add container for horizontal scrolling */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 auto;
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -220,164 +285,166 @@
     <div id="timer">00:00.00</div>
     <button id="gameToggle" onclick="toggleGame()">Start Spillet</button>
     <button onclick="toggleCells()">Vis/Skjul Alle Felter</button>
-    <table id="multiplicationTable">
-        <thead>
-            <tr>
-                <th></th>
-                <th>1</th>
-                <th>2</th>
-                <th>3</th>
-                <th>4</th>
-                <th>5</th>
-                <th>6</th>
-                <th>7</th>
-                <th>8</th>
-                <th>9</th>
-                <th>10</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="1" checked> 1</label></th>
-                <td class="cell" data-value="1">1</td>
-                <td class="cell" data-value="2">2</td>
-                <td class="cell" data-value="3">3</td>
-                <td class="cell" data-value="4">4</td>
-                <td class="cell" data-value="5">5</td>
-                <td class="cell" data-value="6">6</td>
-                <td class="cell" data-value="7">7</td>
-                <td class="cell" data-value="8">8</td>
-                <td class="cell" data-value="9">9</td>
-                <td class="cell" data-value="10">10</td>
-            </tr>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="2" checked> 2</label></th>
-                <td class="cell" data-value="2">2</td>
-                <td class="cell" data-value="4">4</td>
-                <td class="cell" data-value="6">6</td>
-                <td class="cell" data-value="8">8</td>
-                <td class="cell" data-value="10">10</td>
-                <td class="cell" data-value="12">12</td>
-                <td class="cell" data-value="14">14</td>
-                <td class="cell" data-value="16">16</td>
-                <td class="cell" data-value="18">18</td>
-                <td class="cell" data-value="20">20</td>
-            </tr>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="3" checked> 3</label></th>
-                <td class="cell" data-value="3">3</td>
-                <td class="cell" data-value="6">6</td>
-                <td class="cell" data-value="9">9</td>
-                <td class="cell" data-value="12">12</td>
-                <td class="cell" data-value="15">15</td>
-                <td class="cell" data-value="18">18</td>
-                <td class="cell" data-value="21">21</td>
-                <td class="cell" data-value="24">24</td>
-                <td class="cell" data-value="27">27</td>
-                <td class="cell" data-value="30">30</td>
-            </tr>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="4" checked> 4</label></th>
-                <td class="cell" data-value="4">4</td>
-                <td class="cell" data-value="8">8</td>
-                <td class="cell" data-value="12">12</td>
-                <td class="cell" data-value="16">16</td>
-                <td class="cell" data-value="20">20</td>
-                <td class="cell" data-value="24">24</td>
-                <td class="cell" data-value="28">28</td>
-                <td class="cell" data-value="32">32</td>
-                <td class="cell" data-value="36">36</td>
-                <td class="cell" data-value="40">40</td>
-            </tr>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="5" checked> 5</label></th>
-                <td class="cell" data-value="5">5</td>
-                <td class="cell" data-value="10">10</td>
-                <td class="cell" data-value="15">15</td>
-                <td class="cell" data-value="20">20</td>
-                <td class="cell" data-value="25">25</td>
-                <td class="cell" data-value="30">30</td>
-                <td class="cell" data-value="35">35</td>
-                <td class="cell" data-value="40">40</td>
-                <td class="cell" data-value="45">45</td>
-                <td class="cell" data-value="50">50</td>
-            </tr>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="6" checked> 6</label></th>
-                <td class="cell" data-value="6">6</td>
-                <td class="cell" data-value="12">12</td>
-                <td class="cell" data-value="18">18</td>
-                <td class="cell" data-value="24">24</td>
-                <td class="cell" data-value="30">30</td>
-                <td class="cell" data-value="36">36</td>
-                <td class="cell" data-value="42">42</td>
-                <td class="cell" data-value="48">48</td>
-                <td class="cell" data-value="54">54</td>
-                <td class="cell" data-value="60">60</td>
-            </tr>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="7" checked> 7</label></th>
-                <td class="cell" data-value="7">7</td>
-                <td class="cell" data-value="14">14</td>
-                <td class="cell" data-value="21">21</td>
-                <td class="cell" data-value="28">28</td>
-                <td class="cell" data-value="35">35</td>
-                <td class="cell" data-value="42">42</td>
-                <td class="cell" data-value="49">49</td>
-                <td class="cell" data-value="56">56</td>
-                <td class="cell" data-value="63">63</td>
-                <td class="cell" data-value="70">70</td>
-            </tr>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="8" checked> 8</label></th>
-                <td class="cell" data-value="8">8</td>
-                <td class="cell" data-value="16">16</td>
-                <td class="cell" data-value="24">24</td>
-                <td class="cell" data-value="32">32</td>
-                <td class="cell" data-value="40">40</td>
-                <td class="cell" data-value="48">48</td>
-                <td class="cell" data-value="56">56</td>
-                <td class="cell" data-value="64">64</td>
-                <td class="cell" data-value="72">72</td>
-                <td class="cell" data-value="80">80</td>
-            </tr>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="9" checked> 9</label></th>
-                <td class="cell" data-value="9">9</td>
-                <td class="cell" data-value="18">18</td>
-                <td class="cell" data-value="27">27</td>
-                <td class="cell" data-value="36">36</td>
-                <td class="cell" data-value="45">45</td>
-                <td class="cell" data-value="54">54</td>
-                <td class="cell" data-value="63">63</td>
-                <td class="cell" data-value="72">72</td>
-                <td class="cell" data-value="81">81</td>
-                <td class="cell" data-value="90">90</td>
-            </tr>
-            <tr>
-                <th><label><input type="checkbox" class="table-checkbox" value="10" checked> 10</label></th>
-                <td class="cell" data-value="10">10</td>
-                <td class="cell" data-value="20">20</td>
-                <td class="cell" data-value="30">30</td>
-                <td class="cell" data-value="40">40</td>
-                <td class="cell" data-value="50">50</td>
-                <td class="cell" data-value="60">60</td>
-                <td class="cell" data-value="70">70</td>
-                <td class="cell" data-value="80">80</td>
-                <td class="cell" data-value="90">90</td>
-                <td class="cell" data-value="100">100</td>
-            </tr>
-            <tr id="gameRow" class="hidden">
-                <th></th>
-                <td colspan="10">
-                    <span id="question"></span>
-                    <input type="number" id="answer" placeholder="Indtast dit svar" onkeydown="handleKeyDown(event)">
-                    <button onclick="checkAnswer()">Tjek svar</button>
-                    <p id="feedback"></p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-container">
+        <table id="multiplicationTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                    <th>8</th>
+                    <th>9</th>
+                    <th>10</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="1" checked> 1</label></th>
+                    <td class="cell" data-value="1">1</td>
+                    <td class="cell" data-value="2">2</td>
+                    <td class="cell" data-value="3">3</td>
+                    <td class="cell" data-value="4">4</td>
+                    <td class="cell" data-value="5">5</td>
+                    <td class="cell" data-value="6">6</td>
+                    <td class="cell" data-value="7">7</td>
+                    <td class="cell" data-value="8">8</td>
+                    <td class="cell" data-value="9">9</td>
+                    <td class="cell" data-value="10">10</td>
+                </tr>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="2" checked> 2</label></th>
+                    <td class="cell" data-value="2">2</td>
+                    <td class="cell" data-value="4">4</td>
+                    <td class="cell" data-value="6">6</td>
+                    <td class="cell" data-value="8">8</td>
+                    <td class="cell" data-value="10">10</td>
+                    <td class="cell" data-value="12">12</td>
+                    <td class="cell" data-value="14">14</td>
+                    <td class="cell" data-value="16">16</td>
+                    <td class="cell" data-value="18">18</td>
+                    <td class="cell" data-value="20">20</td>
+                </tr>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="3" checked> 3</label></th>
+                    <td class="cell" data-value="3">3</td>
+                    <td class="cell" data-value="6">6</td>
+                    <td class="cell" data-value="9">9</td>
+                    <td class="cell" data-value="12">12</td>
+                    <td class="cell" data-value="15">15</td>
+                    <td class="cell" data-value="18">18</td>
+                    <td class="cell" data-value="21">21</td>
+                    <td class="cell" data-value="24">24</td>
+                    <td class="cell" data-value="27">27</td>
+                    <td class="cell" data-value="30">30</td>
+                </tr>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="4" checked> 4</label></th>
+                    <td class="cell" data-value="4">4</td>
+                    <td class="cell" data-value="8">8</td>
+                    <td class="cell" data-value="12">12</td>
+                    <td class="cell" data-value="16">16</td>
+                    <td class="cell" data-value="20">20</td>
+                    <td class="cell" data-value="24">24</td>
+                    <td class="cell" data-value="28">28</td>
+                    <td class="cell" data-value="32">32</td>
+                    <td class="cell" data-value="36">36</td>
+                    <td class="cell" data-value="40">40</td>
+                </tr>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="5" checked> 5</label></th>
+                    <td class="cell" data-value="5">5</td>
+                    <td class="cell" data-value="10">10</td>
+                    <td class="cell" data-value="15">15</td>
+                    <td class="cell" data-value="20">20</td>
+                    <td class="cell" data-value="25">25</td>
+                    <td class="cell" data-value="30">30</td>
+                    <td class="cell" data-value="35">35</td>
+                    <td class="cell" data-value="40">40</td>
+                    <td class="cell" data-value="45">45</td>
+                    <td class="cell" data-value="50">50</td>
+                </tr>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="6" checked> 6</label></th>
+                    <td class="cell" data-value="6">6</td>
+                    <td class="cell" data-value="12">12</td>
+                    <td class="cell" data-value="18">18</td>
+                    <td class="cell" data-value="24">24</td>
+                    <td class="cell" data-value="30">30</td>
+                    <td class="cell" data-value="36">36</td>
+                    <td class="cell" data-value="42">42</td>
+                    <td class="cell" data-value="48">48</td>
+                    <td class="cell" data-value="54">54</td>
+                    <td class="cell" data-value="60">60</td>
+                </tr>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="7" checked> 7</label></th>
+                    <td class="cell" data-value="7">7</td>
+                    <td class="cell" data-value="14">14</td>
+                    <td class="cell" data-value="21">21</td>
+                    <td class="cell" data-value="28">28</td>
+                    <td class="cell" data-value="35">35</td>
+                    <td class="cell" data-value="42">42</td>
+                    <td class="cell" data-value="49">49</td>
+                    <td class="cell" data-value="56">56</td>
+                    <td class="cell" data-value="63">63</td>
+                    <td class="cell" data-value="70">70</td>
+                </tr>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="8" checked> 8</label></th>
+                    <td class="cell" data-value="8">8</td>
+                    <td class="cell" data-value="16">16</td>
+                    <td class="cell" data-value="24">24</td>
+                    <td class="cell" data-value="32">32</td>
+                    <td class="cell" data-value="40">40</td>
+                    <td class="cell" data-value="48">48</td>
+                    <td class="cell" data-value="56">56</td>
+                    <td class="cell" data-value="64">64</td>
+                    <td class="cell" data-value="72">72</td>
+                    <td class="cell" data-value="80">80</td>
+                </tr>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="9" checked> 9</label></th>
+                    <td class="cell" data-value="9">9</td>
+                    <td class="cell" data-value="18">18</td>
+                    <td class="cell" data-value="27">27</td>
+                    <td class="cell" data-value="36">36</td>
+                    <td class="cell" data-value="45">45</td>
+                    <td class="cell" data-value="54">54</td>
+                    <td class="cell" data-value="63">63</td>
+                    <td class="cell" data-value="72">72</td>
+                    <td class="cell" data-value="81">81</td>
+                    <td class="cell" data-value="90">90</td>
+                </tr>
+                <tr>
+                    <th><label><input type="checkbox" class="table-checkbox" value="10" checked> 10</label></th>
+                    <td class="cell" data-value="10">10</td>
+                    <td class="cell" data-value="20">20</td>
+                    <td class="cell" data-value="30">30</td>
+                    <td class="cell" data-value="40">40</td>
+                    <td class="cell" data-value="50">50</td>
+                    <td class="cell" data-value="60">60</td>
+                    <td class="cell" data-value="70">70</td>
+                    <td class="cell" data-value="80">80</td>
+                    <td class="cell" data-value="90">90</td>
+                    <td class="cell" data-value="100">100</td>
+                </tr>
+                <tr id="gameRow" class="hidden">
+                    <th></th>
+                    <td colspan="10">
+                        <span id="question"></span>
+                        <input type="number" id="answer" placeholder="Indtast dit svar" onkeydown="handleKeyDown(event)">
+                        <button onclick="checkAnswer()">Tjek svar</button>
+                        <p id="feedback"></p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <script>
         let currentQuestion = {};
         let cellsVisible = false;
@@ -404,9 +471,11 @@
             
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
-                cell.textContent = '?';
-                cell.classList.remove('solved', 'correct', 'incorrect');
-                cell.classList.remove('hidden');
+                if (!cell.classList.contains('solved')) {
+                    cell.textContent = '?';
+                    cell.classList.remove('correct', 'incorrect');
+                    cell.classList.add('hidden-value');
+                }
             });
             document.getElementById('gameRow').classList.remove('hidden');
             document.getElementById('answer').disabled = false;
@@ -498,9 +567,12 @@
             if (!gameActive) return;
             const userAnswer = parseInt(document.getElementById('answer').value, 10);
             const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${currentQuestion.row}) td:nth-child(${currentQuestion.col})`);
+            
             if (userAnswer === currentQuestion.answer) {
                 cell.textContent = currentQuestion.answer;
+                cell.classList.remove('hidden-value', 'incorrect');
                 cell.classList.add('correct', 'solved');
+                document.getElementById('answer').value = '';
                 generateQuestion();
             } else {
                 cell.classList.add('incorrect');
