@@ -174,8 +174,9 @@
             }
 
             #answer {
-                width: calc(100% - 40px);
-                margin: 10px auto;
+                width: calc(100% - 16px); /* Match button width calculation */
+                margin: 8px;
+                box-sizing: border-box;
             }
 
             .table-checkbox {
@@ -230,9 +231,10 @@
             }
 
             #answer {
-                padding: 8px;
-                font-size: 16px;
-                width: 80px;
+                width: calc(100% - 8px); /* Adjust for smaller margins */
+                margin: 4px;
+                padding: 10px 15px;
+                font-size: 14px;
             }
         }
 
@@ -278,6 +280,26 @@
             -webkit-overflow-scrolling: touch;
             margin: 0 auto;
             position: relative;
+        }
+
+        /* Add new styles for game controls */
+        .game-controls {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 16px rgba(108, 99, 255, 0.1);
+        }
+
+        .game-controls #question {
+            margin: 10px 0;
+        }
+
+        @media screen and (max-width: 600px) {
+            .game-controls {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -434,18 +456,18 @@
                     <td class="cell" data-value="90">90</td>
                     <td class="cell" data-value="100">100</td>
                 </tr>
-                <tr id="gameRow" class="hidden">
-                    <th></th>
-                    <td colspan="10">
-                        <span id="question"></span>
-                        <input type="number" id="answer" placeholder="Indtast dit svar" onkeydown="handleKeyDown(event)">
-                        <button onclick="checkAnswer()">Tjek svar</button>
-                        <p id="feedback"></p>
-                    </td>
-                </tr>
             </tbody>
         </table>
     </div>
+
+    <!-- Add new game controls container -->
+    <div id="gameControls" class="game-controls hidden">
+        <span id="question"></span>
+        <input type="number" id="answer" placeholder="Indtast dit svar" onkeydown="handleKeyDown(event)">
+        <button onclick="checkAnswer()">Tjek svar</button>
+        <p id="feedback"></p>
+    </div>
+
     <script>
         // Update initial state
         let currentQuestion = {};
@@ -479,7 +501,7 @@
                     cell.classList.add('hidden-value');
                 }
             });
-            document.getElementById('gameRow').classList.remove('hidden');
+            document.getElementById('gameControls').classList.remove('hidden');
             document.getElementById('answer').disabled = false;
             document.getElementById('feedback').textContent = '';
             generateQuestion();
@@ -498,7 +520,7 @@
                 cell.classList.remove('solved', 'correct', 'incorrect');
             });
             
-            document.getElementById('gameRow').classList.add('hidden');
+            document.getElementById('gameControls').classList.add('hidden');
             document.getElementById('question').textContent = '';
             document.getElementById('answer').value = '';
             document.getElementById('answer').disabled = true;
