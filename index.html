@@ -447,8 +447,9 @@
         </table>
     </div>
     <script>
+        // Update initial state
         let currentQuestion = {};
-        let cellsVisible = false;
+        let cellsVisible = true;  // Keep true for initial state
         let timerInterval;
         let startTime;
         let gameActive = false;
@@ -519,9 +520,7 @@
             cells.forEach(cell => {
                 if (!cell.classList.contains('solved')) {
                     cell.textContent = cellsVisible ? cell.getAttribute('data-value') : '?';
-                    if (!gameActive) {
-                        cell.classList.toggle('hidden-value', !cellsVisible);
-                    }
+                    cell.classList.toggle('hidden-value', !cellsVisible);
                 }
             });
         }
@@ -606,8 +605,21 @@
             });
         }
 
+        // Remove or modify initializeTable to not hide cells initially
+        function initializeTable() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.textContent = cell.getAttribute('data-value'); // Show values initially
+                cell.classList.remove('hidden-value'); // Ensure cells are visible
+            });
+            cellsVisible = true; // Match the visible state
+        }
+
         // Initialize cell clicks when page loads
-        document.addEventListener('DOMContentLoaded', initializeCellClicks);
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTable();
+            initializeCellClicks();
+        });
     </script>
 </body>
 </html>
