@@ -87,10 +87,12 @@ function toggleCells() {
     const cells = document.querySelectorAll('.cell');
     cellsVisible = !cellsVisible;
     cells.forEach(cell => {
-        if (!cell.classList.contains('solved')) {
-            cell.textContent = cellsVisible ? cell.getAttribute('data-value') : '?';
-            cell.classList.toggle('hidden-value', !cellsVisible);
-        }
+        // Clear all game-related classes
+        cell.classList.remove('correct', 'solved', 'incorrect');
+        
+        // Toggle visibility
+        cell.textContent = cellsVisible ? cell.getAttribute('data-value') : '?';
+        cell.classList.toggle('hidden-value', !cellsVisible);
     });
 }
 
