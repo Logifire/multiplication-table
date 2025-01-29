@@ -308,7 +308,7 @@ function fireConfetti() {
 // Initialize cell clicks when page loads
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('answer').addEventListener('input', function(e) {
-        if (this.value.length >= 2) { // Auto-submit for 2 or more digits
+        if (this.value.length >= 3) { // Changed from 2 to 3 to allow for 100
             checkAnswer();
         }
     });
