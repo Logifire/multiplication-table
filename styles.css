@@ -345,7 +345,7 @@ th:first-child label {
 .game-controls {
     width: 100%;
     max-width: 800px; /* Match max-width with table */
-    margin: 0 auto 20px; /* Changed to add bottom margin */
+    margin: 0 0 20px; /* Changed to add bottom margin */
     padding: 20px;
     background: white;
     border-radius: var(--border-radius);
@@ -410,7 +410,21 @@ button[onclick="toggleCells"] {
 @media screen and (max-width: 600px) {
     .game-controls {
         padding: 15px;
-        margin: 10px;
+        margin: 0 0 10px;
+        border-radius: 0; /* Remove border radius on mobile */
+    }
+
+    .game-wrapper {
+        padding: 0;
+    }
+    
+    /* Update input and button styles for mobile */
+    #gameToggle,
+    #answer,
+    .game-input-group button {
+        width: 100%;
+        margin: 8px 0;
+        box-sizing: border-box;
     }
 
     .game-input-group {
@@ -442,7 +456,7 @@ button[onclick="toggleCells"] {
 @media screen and (max-width: 375px) {
     .game-controls {
         padding: 10px;
-        margin: 5px;
+        margin: 0 0 5px;
     }
 
     .game-input-group #question {
@@ -513,19 +527,19 @@ button[onclick="toggleCells"] {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 0;
     box-sizing: border-box;
 }
 
 @media screen and (max-width: 600px) {
     .game-wrapper {
-        padding: 0 10px;
+        padding: 0;
     }
 }
 
 @media screen and (max-width: 375px) {
     .game-wrapper {
-        padding: 0 5px;
+        padding: 0;
     }
 }
 
@@ -601,5 +615,58 @@ button[onclick="toggleCells"] {
     .visibility-toggle:active {
         background: rgba(108, 99, 255, 0.2);
         border-radius: 50%;
+    }
+}
+
+/* Add progress bar styles */
+.progress-container {
+    width: 100%;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.progress-container.active {
+    opacity: 1;
+    height: auto;
+    margin: 15px 0;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 10px;
+    background: rgba(108, 99, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--primary-color);
+    min-width: 54px;
+    text-align: right;
+}
+
+@media screen and (max-width: 600px) {
+    .progress-container {
+        margin: 8px 0;
+    }
+    
+    .progress-container.active {
+        margin: 12px 0;
     }
 }

@@ -7,6 +7,10 @@ let gameActive = false;
 let lastSoundTime = 0;
 const SOUND_COOLDOWN = 200;
 
+// Add to initial state declarations
+let totalProblems = 0;
+let solvedProblems = 0;
+
 // Add this after the initial state declarations
 const correctAnswers = [];
 for (let i = 1; i <= 10; i++) {
@@ -43,6 +47,10 @@ function resetGame() {
     if (timerInterval) {
         clearInterval(timerInterval);
     }
+    document.querySelector('.progress-container').classList.remove('active');
+    solvedProblems = 0;
+    totalProblems = 0;
+    updateProgress();
 }
 
 function startGame() {
@@ -50,6 +58,15 @@ function startGame() {
     gameActive = true;
     startTime = Date.now();
     timerInterval = setInterval(updateTimer, 10);
+    
+    // Calculate total problems based on selected checkboxes
+    const selectedValues = Array.from(document.querySelectorAll('.table-checkbox:checked')).length;
+    totalProblems = selectedValues * 10;
+    solvedProblems = 0;
+    updateProgress();
+    
+    // Show progress bar
+    document.querySelector('.progress-container').classList.add('active');
     
     const cells = document.querySelectorAll('.cell');
     cells.forEach(cell => {
@@ -86,6 +103,7 @@ function stopGame() {
     // Reset visibility state
     cellsVisible = true;
     document.body.classList.remove('hide-cells');
+    document.querySelector('.progress-container').classList.remove('active');
 }
 
 function updateTimer() {
@@ -218,6 +236,9 @@ function checkAnswer() {
             }
         });
 
+        solvedProblems++;
+        updateProgress();
+
         generateQuestion();
     } else {
         cell.classList.add('incorrect');
@@ -225,6 +246,15 @@ function checkAnswer() {
         setTimeout(() => cell.classList.remove('incorrect'), 500);
         document.getElementById('answer').select();
     }
+}
+
+function updateProgress() {
+    const progressFill = document.querySelector('.progress-fill');
+    const progressText = document.querySelector('#progressText');
+    const percentage = (solvedProblems / totalProblems) * 100;
+    
+    progressFill.style.width = `${percentage}%`;
+    progressText.textContent = `${solvedProblems}/${totalProblems}`;
 }
 
 function handleKeyDown(event) {
