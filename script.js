@@ -348,12 +348,26 @@ function fireConfetti() {
 
 // Initialize cell clicks when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('answer').addEventListener('input', function(e) {
+    const answerInput = document.getElementById('answer');
+    
+    // Handle input changes
+    answerInput.addEventListener('input', function(e) {
+        // Remove non-numeric characters
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
         const userAnswer = parseInt(this.value, 10);
-        // Auto-validate if the answer matches the current question's answer
-        if (userAnswer === currentQuestion.answer) {
-            checkAnswer();
+        // Only check if we have a valid number and the game is active
+        if (!isNaN(userAnswer) && gameActive && userAnswer === currentQuestion.answer) {
+            setTimeout(() => checkAnswer(), 200); // Small delay for better UX
         }
+    });
+
+    // Handle focus events for iOS
+    answerInput.addEventListener('focus', function() {
+        // Scroll the input into view on iOS
+        setTimeout(() => {
+            this.scrollIntoViewIfNeeded();
+        }, 300);
     });
 
     initializeTable();
