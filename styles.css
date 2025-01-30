@@ -502,10 +502,13 @@ button[onclick="toggleCells"] {
     justify-content: center;
     position: relative;
     touch-action: manipulation;
+    border-radius: 50%;
 }
 
-.visibility-toggle:active {
-    background: rgba(108, 99, 255, 0.2);
+.visibility-toggle:active,
+.visibility-toggle:hover {
+    background: rgba(108, 99, 255, 0.1);
+    box-shadow: none;
 }
 
 .eye-icon {
@@ -513,25 +516,20 @@ button[onclick="toggleCells"] {
     transition: all 0.3s ease;
     width: 28px;
     height: 28px;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
+    display: block;
+    pointer-events: none;
 }
 
 .eye-icon path {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
+    transition: opacity 0.3s ease;
 }
 
-/* Update the display properties for iOS */
+.eye-icon .eye-open {
+    opacity: 1;
+}
+
 .eye-icon .eye-closed {
     opacity: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
 }
 
 .hide-cells .eye-icon .eye-open {
@@ -540,6 +538,13 @@ button[onclick="toggleCells"] {
 
 .hide-cells .eye-icon .eye-closed {
     opacity: 1;
+}
+
+/* Remove hardware acceleration styles that were causing issues */
+.eye-icon,
+.eye-icon path {
+    transform: none;
+    backface-visibility: visible;
 }
 
 /* Add touch feedback for iOS */

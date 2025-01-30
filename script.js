@@ -86,13 +86,14 @@ function updateTimer() {
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
 }
 
-function toggleCells() {
+function toggleCells(event) {
+    if (event) {
+        event.preventDefault();
+    }
+    
     const cells = document.querySelectorAll('.cell');
     cellsVisible = !cellsVisible;
     document.body.classList.toggle('hide-cells', !cellsVisible);
-    
-    // Prevent double-tap zoom on iOS
-    event.preventDefault();
     
     cells.forEach(cell => {
         // Clear all game-related classes
@@ -326,7 +327,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Prevent default touch behavior on the toggle button
     const toggleButton = document.querySelector('.visibility-toggle');
+    toggleButton.addEventListener('click', toggleCells);
     toggleButton.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        toggleCells(e);
     }, { passive: false });
 });
