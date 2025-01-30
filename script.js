@@ -92,24 +92,30 @@ function updateTimer() {
 function toggleCells(event) {
     if (event) {
         event.preventDefault();
+        event.stopPropagation();
     }
     
     const cells = document.querySelectorAll('.cell');
     cellsVisible = !cellsVisible;
     document.body.classList.toggle('hide-cells', !cellsVisible);
     
-    cells.forEach(cell => {
-        if (gameActive) {
-            // During gameplay, preserve correct answers
-            if (!cell.classList.contains('solved')) {
-                cell.textContent = cellsVisible ? cell.getAttribute('data-value') : '?';
-                cell.classList.toggle('hidden-value', !cellsVisible);
+    requestAnimationFrame(() => {
+        cells.forEach(cell => {
+            if (gameActive && cell.classList.contains('solved')) {
+                // Keep solved cells visible and green
+                cell.classList.remove('hidden-value');
+                return;
             }
-        } else {
-            // When game is not active, toggle all cells
-            cell.textContent = cellsVisible ? cell.getAttribute('data-value') : '?';
-            cell.classList.toggle('hidden-value', !cellsVisible);
-        }
+            
+            // Toggle other cells
+            if (cellsVisible) {
+                cell.textContent = cell.getAttribute('data-value');
+                cell.classList.remove('hidden-value');
+            } else {
+                cell.textContent = '?';
+                cell.classList.add('hidden-value');
+            }
+        });
     });
 }
 
@@ -336,9 +342,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Prevent default touch behavior on the toggle button
     const toggleButton = document.querySelector('.visibility-toggle');
-    toggleButton.addEventListener('click', toggleCells);
-    toggleButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        toggleCells(e);
-    }, { passive: false });
+    ['click', 'touchend'].forEach(eventType => {
+        toggleButton.addEventListener(eventType, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCells(e);
+        }, { passive: false });
+    });
 });

@@ -474,6 +474,18 @@ button[onclick="toggleCells"] {
     color: white;
 }
 
+.cell.solved {
+    background-color: var(--success-color);
+    color: white;
+    pointer-events: none;
+    transform: none;
+    transition: none;
+}
+
+.cell.solved.hidden-value:after {
+    display: none;
+}
+
 #question.active {
     animation: pulse 1s infinite;
 }
@@ -537,6 +549,9 @@ button[onclick="toggleCells"] {
     border-radius: 50%;
     margin-left: 8px; /* Add left margin to align with checkboxes */
     margin-right: auto; /* Push to the left */
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .visibility-toggle:active,
