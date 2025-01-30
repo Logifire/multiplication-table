@@ -190,6 +190,7 @@ function checkAnswer() {
         generateQuestion();
     } else {
         cell.classList.add('incorrect');
+        playSound('incorrectSound');
         setTimeout(() => cell.classList.remove('incorrect'), 500);
         document.getElementById('answer').select();
     }
