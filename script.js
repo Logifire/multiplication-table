@@ -6,8 +6,6 @@ let startTime;
 let gameActive = false;
 let lastSoundTime = 0;
 const SOUND_COOLDOWN = 200;
-const AUDIO_POOL_SIZE = 3;
-const audioPool = {};
 
 function toggleGame() {
     if (gameActive) {
@@ -167,21 +165,25 @@ function generateQuestion() {
     document.getElementById('answer').focus();
 }
 
-// Update playSound function
+// Remove the audio pool related code and update the playSound function
 function playSound(soundId) {
-    if (audioPool[soundId]) {
-        // Find available audio element from pool
-        const audio = audioPool[soundId].find(a => a.paused) || audioPool[soundId][0];
-        audio.currentTime = 0;
-        audio.play().catch(() => {});
-    } else {
-        // Fallback for completion sound (played only once)
-        const sound = document.getElementById(soundId);
-        if (sound) {
-            sound.currentTime = 0;
-            sound.play().catch(() => {});
-        }
-    }
+    // Create new audio element each time for iOS
+    const originalAudio = document.getElementById(soundId);
+    if (!originalAudio) return;
+
+    const sound = new Audio(originalAudio.querySelector('source').src);
+    sound.volume = 0.3;
+    
+    // Play immediately and remove when done
+    sound.play()
+        .then(() => {
+            sound.addEventListener('ended', () => {
+                sound.remove();
+            });
+        })
+        .catch(() => {
+            sound.remove();
+        });
 }
 
 function checkAnswer() {
@@ -336,17 +338,6 @@ function fireConfetti() {
     }
 }
 
-// Add new function to initialize audio pool
-function initializeAudioPool() {
-    ['correctSound', 'incorrectSound'].forEach(soundId => {
-        audioPool[soundId] = Array.from({ length: AUDIO_POOL_SIZE }, () => {
-            const audio = new Audio(document.getElementById(soundId).querySelector('source').src);
-            audio.volume = 0.3;
-            return audio;
-        });
-    });
-}
-
 // Initialize cell clicks when page loads
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('answer').addEventListener('input', function(e) {
@@ -357,7 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initializeTable();
     initializeCellClicks();
-    initializeAudioPool();
     
     // Prevent default touch behavior on the toggle button
     const toggleButton = document.querySelector('.visibility-toggle');
