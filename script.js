@@ -63,10 +63,9 @@ function stopGame() {
     
     const cells = document.querySelectorAll('.cell');
     cells.forEach(cell => {
-        if (cell.textContent === '?') {
-            cell.classList.add('hidden-value');
-        }
-        cell.classList.remove('solved', 'correct', 'incorrect');
+        // Reset all cells to their original state
+        cell.textContent = cell.getAttribute('data-value');
+        cell.classList.remove('hidden-value', 'solved', 'correct', 'incorrect');
     });
     
     document.getElementById('gameInputGroup').classList.remove('active');
@@ -75,6 +74,10 @@ function stopGame() {
     document.getElementById('answer').value = '';
     document.getElementById('answer').disabled = true;
     document.getElementById('feedback').textContent = 'Spillet er stoppet';
+    
+    // Reset visibility state
+    cellsVisible = true;
+    document.body.classList.remove('hide-cells');
 }
 
 function updateTimer() {
@@ -96,12 +99,17 @@ function toggleCells(event) {
     document.body.classList.toggle('hide-cells', !cellsVisible);
     
     cells.forEach(cell => {
-        // Clear all game-related classes
-        cell.classList.remove('correct', 'solved', 'incorrect');
-        
-        // Toggle visibility
-        cell.textContent = cellsVisible ? cell.getAttribute('data-value') : '?';
-        cell.classList.toggle('hidden-value', !cellsVisible);
+        if (gameActive) {
+            // During gameplay, preserve correct answers
+            if (!cell.classList.contains('solved')) {
+                cell.textContent = cellsVisible ? cell.getAttribute('data-value') : '?';
+                cell.classList.toggle('hidden-value', !cellsVisible);
+            }
+        } else {
+            // When game is not active, toggle all cells
+            cell.textContent = cellsVisible ? cell.getAttribute('data-value') : '?';
+            cell.classList.toggle('hidden-value', !cellsVisible);
+        }
     });
 }
 
