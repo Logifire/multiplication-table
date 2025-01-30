@@ -91,6 +91,9 @@ function toggleCells() {
     cellsVisible = !cellsVisible;
     document.body.classList.toggle('hide-cells', !cellsVisible);
     
+    // Prevent double-tap zoom on iOS
+    event.preventDefault();
+    
     cells.forEach(cell => {
         // Clear all game-related classes
         cell.classList.remove('correct', 'solved', 'incorrect');
@@ -320,4 +323,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initializeTable();
     initializeCellClicks();
+    
+    // Prevent default touch behavior on the toggle button
+    const toggleButton = document.querySelector('.visibility-toggle');
+    toggleButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+    }, { passive: false });
 });
