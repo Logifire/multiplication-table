@@ -19,6 +19,97 @@ for (let i = 1; i <= 10; i++) {
     }
 }
 
+// Add after the initial state declarations
+const STATS_KEY = 'multiplicationTableStats';
+let activeStatsView = 'best';
+
+function saveStats(time) {
+    const stats = getStats();
+    const selectedTables = Array.from(document.querySelectorAll('.table-checkbox:checked'))
+        .map(cb => cb.value)
+        .sort((a, b) => a - b);
+    const tablesKey = selectedTables.join(',');
+    
+    const newStat = {
+        time,
+        tables: selectedTables,
+        date: new Date().toISOString(),
+    };
+
+    // Add to recent times
+    if (!stats.recent[tablesKey]) {
+        stats.recent[tablesKey] = [];
+    }
+    stats.recent[tablesKey].unshift(newStat);
+    stats.recent[tablesKey] = stats.recent[tablesKey].slice(0, 5); // Keep only last 5
+
+    // Update best time
+    if (!stats.best[tablesKey] || time < stats.best[tablesKey].time) {
+        stats.best[tablesKey] = newStat;
+    }
+
+    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+    updateStatsDisplay();
+}
+
+function getStats() {
+    const defaultStats = { best: {}, recent: {} };
+    try {
+        return JSON.parse(localStorage.getItem(STATS_KEY)) || defaultStats;
+    } catch {
+        return defaultStats;
+    }
+}
+
+function formatTimeFromMs(ms) {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    const milliseconds = Math.floor((ms % 1000) / 10);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+}
+
+function updateStatsDisplay() {
+    const stats = getStats();
+    const content = document.getElementById('statisticsContent');
+    const data = activeStatsView === 'best' ? stats.best : stats.recent;
+    
+    if (Object.keys(data).length === 0) {
+        content.innerHTML = '<p class="no-stats">Ingen tider registreret endnu</p>';
+        return;
+    }
+
+    const entries = Object.entries(data)
+        .map(([tables, stat]) => {
+            if (Array.isArray(stat)) {
+                // Recent times
+                return stat.map(entry => ({
+                    tables: entry.tables,
+                    time: entry.time,
+                    date: new Date(entry.date)
+                }));
+            } else {
+                // Best time
+                return [{
+                    tables: stat.tables,
+                    time: stat.time,
+                    date: new Date(stat.date)
+                }];
+            }
+        })
+        .flat()
+        .sort((a, b) => a.time - b.time);
+
+    content.innerHTML = entries.map(stat => `
+        <div class="stat-entry">
+            <div class="stat-info">
+                <span class="stat-time">${formatTimeFromMs(stat.time)}</span>
+                <span class="stat-date">${stat.date.toLocaleDateString()}</span>
+            </div>
+            <span class="stat-tables">Tabeller: ${stat.tables.join(', ')}</span>
+        </div>
+    `).join('');
+}
+
 function toggleGame() {
     if (gameActive) {
         stopGame();
@@ -81,8 +172,10 @@ function startGame() {
     generateQuestion();
 }
 
+// Update stopGame function to only save stats when explicitly stopping
 function stopGame() {
     if (!gameActive) return;
+    
     gameActive = false;
     clearInterval(timerInterval);
     
@@ -145,6 +238,8 @@ function toggleCells(event) {
     });
 }
 
+// ...existing code...
+
 function generateQuestion() {
     if (!gameActive) return;
     const selectedValues = Array.from(document.querySelectorAll('.table-checkbox:checked')).map(cb => parseInt(cb.value, 10));
@@ -155,17 +250,21 @@ function generateQuestion() {
             const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${num1}) td:nth-child(${col + 1})`);
             if (cell && !cell.classList.contains('solved')) {
                 unsolvedCells.push({ 
-                    row: num1,     // Rækken er den valgte talrække
-                    col: col + 1,  // Kolonnen (+1 for at kompensere for th)
-                    num1: col,     // Første faktor (fra kolonnen)
-                    num2: num1     // Anden faktor (fra rækken)
+                    row: num1,
+                    col: col + 1,
+                    num1: col,
+                    num2: num1
                 });
             }
         }
     });
 
     if (unsolvedCells.length === 0) {
-        const finalTime = document.getElementById('timer').textContent;
+        const endTime = Date.now();
+        const totalTime = endTime - startTime;
+        saveStats(totalTime); // Save stats when game is completed
+
+        const finalTime = formatTimeFromMs(totalTime);
         document.getElementById('completionSound').play();
         showAchievementBanner(`Fantastisk! Du klarede det på ${finalTime}!`);
         fireConfetti();
@@ -412,4 +511,17 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleCells(e);
         }, { passive: false });
     });
+
+    // Add tab handling
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            activeStatsView = button.dataset.view;
+            updateStatsDisplay();
+        });
+    });
+
+    // Initial stats display
+    updateStatsDisplay();
 });
