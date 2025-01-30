@@ -7,6 +7,14 @@ let gameActive = false;
 let lastSoundTime = 0;
 const SOUND_COOLDOWN = 200;
 
+// Add this after the initial state declarations
+const correctAnswers = [];
+for (let i = 1; i <= 10; i++) {
+    for (let j = 1; j <= 10; j++) {
+        correctAnswers.push(i * j);
+    }
+}
+
 function toggleGame() {
     if (gameActive) {
         stopGame();
@@ -341,7 +349,9 @@ function fireConfetti() {
 // Initialize cell clicks when page loads
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('answer').addEventListener('input', function(e) {
-        if (this.value.length >= 3) { // Changed from 2 to 3 to allow for 100
+        const userAnswer = parseInt(this.value, 10);
+        // Auto-validate if the answer matches the current question's answer
+        if (userAnswer === currentQuestion.answer) {
             checkAnswer();
         }
     });
