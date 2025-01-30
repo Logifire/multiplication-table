@@ -74,7 +74,8 @@ th:first-child {
     position: sticky;  /* Keep first column visible */
     left: 0;
     background: white;
-    z-index: 1;
+    z-index: 2;
+    padding: 0;
 }
 
 .cell {
@@ -108,6 +109,16 @@ th:first-child {
     color: var(--primary-color);
     margin: 15px 0;
     font-family: monospace;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+#timer.active {
+    opacity: 1;
+    height: auto;
+    margin: 15px 0;
 }
 
 #question {
@@ -302,7 +313,7 @@ th:first-child {
 .game-controls {
     width: 100%;
     max-width: 800px; /* Match max-width with table */
-    margin: 20px auto;
+    margin: 0 auto 20px; /* Changed to add bottom margin */
     padding: 20px;
     background: white;
     border-radius: var(--border-radius);
@@ -310,6 +321,10 @@ th:first-child {
     box-sizing: border-box; /* Include padding in width calculation */
     position: relative;  /* For absolute positioning context */
     min-height: 80px;   /* Minimum height to prevent layout shifts */
+}
+
+button[onclick="toggleCells"] {
+    margin-bottom: 20px; /* Add margin to separate from table */
 }
 
 .game-input-group {
@@ -468,4 +483,41 @@ th:first-child {
     .game-wrapper {
         padding: 0 5px;
     }
+}
+
+/* Add new styles for the visibility toggle */
+.visibility-toggle {
+    background: none;
+    border: none;
+    padding: 5px;
+    margin: 0;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visibility-toggle:hover {
+    background: rgba(108, 99, 255, 0.1);
+    box-shadow: none;
+}
+
+.eye-icon {
+    fill: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.eye-icon .eye-closed {
+    display: none;
+}
+
+.hide-cells .eye-icon .eye-open {
+    display: none;
+}
+
+.hide-cells .eye-icon .eye-closed {
+    display: block;
 }

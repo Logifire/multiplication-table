@@ -27,6 +27,7 @@ function resetGame() {
     document.getElementById('question').textContent = '';
     document.getElementById('answer').value = '';
     document.getElementById('timer').textContent = '00:00.00';
+    document.getElementById('timer').classList.remove('active');
     document.getElementById('gameInputGroup').classList.remove('active');
     document.getElementById('gameToggle').textContent = 'Start Spillet';
     gameActive = false;
@@ -50,6 +51,7 @@ function startGame() {
     
     document.getElementById('gameToggle').textContent = 'Stop Spillet';
     document.getElementById('gameInputGroup').classList.add('active');
+    document.getElementById('timer').classList.add('active');
     document.getElementById('answer').disabled = false;
     generateQuestion();
 }
@@ -68,6 +70,7 @@ function stopGame() {
     });
     
     document.getElementById('gameInputGroup').classList.remove('active');
+    document.getElementById('timer').classList.remove('active');
     document.getElementById('question').textContent = '';
     document.getElementById('answer').value = '';
     document.getElementById('answer').disabled = true;
@@ -86,6 +89,8 @@ function updateTimer() {
 function toggleCells() {
     const cells = document.querySelectorAll('.cell');
     cellsVisible = !cellsVisible;
+    document.body.classList.toggle('hide-cells', !cellsVisible);
+    
     cells.forEach(cell => {
         // Clear all game-related classes
         cell.classList.remove('correct', 'solved', 'incorrect');
