@@ -11,13 +11,10 @@ const SOUND_COOLDOWN = 200;
 let totalProblems = 0;
 let solvedProblems = 0;
 
-// Add this after the initial state declarations
-const correctAnswers = [];
-for (let i = 1; i <= 10; i++) {
-    for (let j = 1; j <= 10; j++) {
-        correctAnswers.push(i * j);
-    }
-}
+// Remove correctAnswers array since it's not being used
+
+// Add audio pool
+const audioPool = new Map();
 
 // Add after the initial state declarations
 const STATS_KEY = 'multiplicationTableStats';
@@ -292,23 +289,34 @@ function generateQuestion() {
 
 // Remove the audio pool related code and update the playSound function
 function playSound(soundId) {
-    // Create new audio element each time for iOS
-    const originalAudio = document.getElementById(soundId);
-    if (!originalAudio) return;
+    const now = Date.now();
+    if (now - lastSoundTime < SOUND_COOLDOWN) return;
+    lastSoundTime = now;
 
-    const sound = new Audio(originalAudio.querySelector('source').src);
-    sound.volume = 0.3;
-    
-    // Play immediately and remove when done
-    sound.play()
-        .then(() => {
-            sound.addEventListener('ended', () => {
-                sound.remove();
-            });
-        })
-        .catch(() => {
-            sound.remove();
-        });
+    // Get or create audio pool for this sound
+    if (!audioPool.has(soundId)) {
+        audioPool.set(soundId, []);
+    }
+    const pool = audioPool.get(soundId);
+
+    // Find available audio element or create new one
+    let sound = pool.find(audio => audio.ended || audio.paused);
+    if (!sound) {
+        const originalAudio = document.getElementById(soundId);
+        if (!originalAudio) return;
+        
+        sound = new Audio(originalAudio.querySelector('source').src);
+        sound.volume = 0.3;
+        pool.push(sound);
+        
+        // Limit pool size
+        if (pool.length > 3) {
+            pool.shift();
+        }
+    }
+
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
 }
 
 function checkAnswer() {
