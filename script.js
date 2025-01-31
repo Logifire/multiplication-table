@@ -324,17 +324,6 @@ function checkAnswer() {
 
         playSound('correctSound');
 
-        requestAnimationFrame(() => {
-            const rect = cell.getBoundingClientRect();
-            for (let i = 0; i < 5; i++) {
-                createNumberParticle(
-                    rect.left + rect.width / 2,
-                    rect.top + rect.height / 2,
-                    userAnswer
-                );
-            }
-        });
-
         solvedProblems++;
         updateProgress();
 
@@ -362,41 +351,42 @@ function handleKeyDown(event) {
     }
 }
 
-function createNumberParticle(x, y, number) {
-    const particle = document.createElement('div');
-    particle.textContent = number;
-    particle.style.cssText = `
-        position: fixed;
-        left: ${x}px;
-        top: ${y}px;
-        font-size: 24px;
-        color: var(--success-color);
-        pointer-events: none;
-        z-index: 1000;
-    `;
-    document.body.appendChild(particle);
+// This creates the confetti explosion when completing the game
+function fireConfetti() {
+    function createFirework() {
+        const colors = ['#6C63FF', '#FF6B6B', '#4CAF50', '#FDD835'];
+        const startX = 0.1 + Math.random() * 0.8;
+        
+        confetti({
+            particleCount: 1,
+            startVelocity: 60,
+            gravity: 1,
+            spread: 0,
+            origin: { x: startX, y: 1 },
+            colors: [colors[Math.floor(Math.random() * colors.length)]],
+            ticks: 200,
+            scalar: 1
+        });
 
-    const angle = Math.random() * Math.PI * 2;
-    const velocity = 2 + Math.random() * 2;
-    let opacity = 1;
-
-    function animate() {
-        const dx = Math.cos(angle) * velocity;
-        const dy = Math.sin(angle) * velocity - 2;
-        x += dx;
-        y += dy;
-        opacity -= 0.02;
-
-        particle.style.transform = `translate(${x}px, ${y}px)`;
-        particle.style.opacity = opacity;
-
-        if (opacity > 0) {
-            requestAnimationFrame(animate);
-        } else {
-            particle.remove();
-        }
+        setTimeout(() => {
+            confetti({
+                particleCount: 100,
+                startVelocity: 30,
+                gravity: 0.5,
+                spread: 360,
+                origin: { x: startX, y: 0.5 },
+                colors: colors,
+                ticks: 200,
+                scalar: 1.2,
+                shapes: ['circle']
+            });
+        }, 1000);
     }
-    animate();
+
+    let fireworkCount = 5;
+    for(let i = 0; i < fireworkCount; i++) {
+        setTimeout(createFirework, i * 600);
+    }
 }
 
 function showAchievementBanner(message) {
@@ -436,43 +426,6 @@ function initializeTable() {
         cell.classList.remove('hidden-value');
     });
     cellsVisible = true;
-}
-
-function fireConfetti() {
-    function createFirework() {
-        const colors = ['#6C63FF', '#FF6B6B', '#4CAF50', '#FDD835'];
-        const startX = 0.1 + Math.random() * 0.8;
-        
-        confetti({
-            particleCount: 1,
-            startVelocity: 60,
-            gravity: 1,
-            spread: 0,
-            origin: { x: startX, y: 1 },
-            colors: [colors[Math.floor(Math.random() * colors.length)]],
-            ticks: 200,
-            scalar: 1
-        });
-
-        setTimeout(() => {
-            confetti({
-                particleCount: 100,
-                startVelocity: 30,
-                gravity: 0.5,
-                spread: 360,
-                origin: { x: startX, y: 0.5 },
-                colors: colors,
-                ticks: 200,
-                scalar: 1.2,
-                shapes: ['circle']
-            });
-        }, 1000);
-    }
-
-    let fireworkCount = 5;
-    for(let i = 0; i < fireworkCount; i++) {
-        setTimeout(createFirework, i * 600);
-    }
 }
 
 // Initialize cell clicks when page loads
