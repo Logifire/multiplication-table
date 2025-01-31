@@ -142,14 +142,20 @@ function resetGame() {
 }
 
 function startGame() {
+    // Check if any tables are selected
+    const selectedTables = document.querySelectorAll('.table-checkbox:checked');
+    if (selectedTables.length === 0) {
+        document.getElementById('feedback').textContent = 'Vælg mindst én tabel for at starte spillet';
+        return;
+    }
+
     resetGame(); // Only reset when explicitly starting
     gameActive = true;
     startTime = Date.now();
     timerInterval = setInterval(updateTimer, 10);
     
     // Calculate total problems based on selected checkboxes
-    const selectedValues = Array.from(document.querySelectorAll('.table-checkbox:checked')).length;
-    totalProblems = selectedValues * 10;
+    totalProblems = selectedTables.length * 10;
     solvedProblems = 0;
     updateProgress();
     
@@ -166,6 +172,7 @@ function startGame() {
     document.getElementById('gameInputGroup').classList.add('active');
     document.getElementById('timer').classList.add('active');
     document.getElementById('answer').disabled = false;
+    document.getElementById('feedback').textContent = '';  // Clear any previous feedback
     generateQuestion();
 }
 
