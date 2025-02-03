@@ -6,10 +6,14 @@ let startTime;
 let gameActive = false;
 let lastSoundTime = 0;
 const SOUND_COOLDOWN = 200;
+let isPracticeMode = false;
 
 // Add to initial state declarations
 let totalProblems = 0;
 let solvedProblems = 0;
+
+// Add new state variables
+let correctAnswers = 0;
 
 // Remove correctAnswers array since it's not being used
 
@@ -107,7 +111,20 @@ function updateStatsDisplay() {
     `).join('');
 }
 
+function togglePractice() {
+    isPracticeMode = true;
+    if (gameActive) {
+        stopGame();
+        document.getElementById('practiceToggle').textContent = 'Start Øvelse';
+    } else {
+        startGame();
+        document.getElementById('practiceToggle').textContent = 'Stop Øvelse';
+    }
+}
+
+// Modify toggleGame function
 function toggleGame() {
+    isPracticeMode = false;
     if (gameActive) {
         stopGame();
         document.getElementById('gameToggle').textContent = 'Start Spillet';
@@ -141,6 +158,7 @@ function resetGame() {
     updateProgress();
 }
 
+// Modify startGame function
 function startGame() {
     // Check if any tables are selected
     const selectedTables = document.querySelectorAll('.table-checkbox:checked');
@@ -151,12 +169,17 @@ function startGame() {
 
     resetGame(); // Only reset when explicitly starting
     gameActive = true;
-    startTime = Date.now();
-    timerInterval = setInterval(updateTimer, 10);
+    
+    if (!isPracticeMode) {
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimer, 10);
+        document.getElementById('timer').classList.add('active');
+    }
     
     // Calculate total problems based on selected checkboxes
     totalProblems = selectedTables.length * 10;
     solvedProblems = 0;
+    correctAnswers = 0;  // Reset correct answers counter
     updateProgress();
     
     // Show progress bar
@@ -168,9 +191,15 @@ function startGame() {
         cell.classList.add('hidden-value');
     });
     
-    document.getElementById('gameToggle').textContent = 'Stop Spillet';
+    if (isPracticeMode) {
+        document.getElementById('practiceToggle').textContent = 'Stop Øvelse';
+        document.getElementById('gameToggle').disabled = true;
+    } else {
+        document.getElementById('gameToggle').textContent = 'Stop Spillet';
+        document.getElementById('practiceToggle').disabled = true;
+    }
+    
     document.getElementById('gameInputGroup').classList.add('active');
-    document.getElementById('timer').classList.add('active');
     document.getElementById('answer').disabled = false;
     document.getElementById('feedback').textContent = '';  // Clear any previous feedback
     generateQuestion();
@@ -201,6 +230,13 @@ function stopGame() {
     cellsVisible = true;
     document.body.classList.remove('hide-cells');
     document.querySelector('.progress-container').classList.remove('active');
+    
+    document.getElementById('gameToggle').disabled = false;
+    document.getElementById('practiceToggle').disabled = false;
+    
+    if (isPracticeMode) {
+        document.getElementById('feedback').textContent = 'Øvelse afsluttet';
+    }
 }
 
 function updateTimer() {
@@ -244,6 +280,7 @@ function toggleCells(event) {
 
 // ...existing code...
 
+// Modify generateQuestion function
 function generateQuestion() {
     if (!gameActive) return;
     const selectedValues = Array.from(document.querySelectorAll('.table-checkbox:checked')).map(cb => parseInt(cb.value, 10));
@@ -264,20 +301,38 @@ function generateQuestion() {
     });
 
     if (unsolvedCells.length === 0) {
-        const endTime = Date.now();
-        const totalTime = endTime - startTime;
-        saveStats(totalTime); // Save stats when game is completed
+        if (!isPracticeMode) {
+            const endTime = Date.now();
+            const totalTime = endTime - startTime;
+            saveStats(totalTime); // Save stats when game is completed
 
-        const finalTime = formatTimeFromMs(totalTime);
-        document.getElementById('completionSound').play();
-        showAchievementBanner(`Fantastisk! Du klarede det på ${finalTime}!`);
-        fireConfetti();
+            const finalTime = formatTimeFromMs(totalTime);
+            document.getElementById('completionSound').play();
+            showAchievementBanner(`Fantastisk! Du klarede det på ${finalTime}!`);
+            fireConfetti();
+            document.getElementById('feedback').textContent = `Alle opgaver er løst! Din tid: ${finalTime}`;
+        } else {
+            document.getElementById('completionSound').play();
+            const score = Math.round((correctAnswers / totalProblems) * 100);
+            showAchievementBanner(`Øvelse færdig! Du fik ${correctAnswers} ud af ${totalProblems} rigtige (${score}%)`);
+            fireConfetti();
+            document.getElementById('feedback').textContent = 
+                `Øvelse afsluttet! Du fik ${correctAnswers} rigtige ud af ${totalProblems} spørgsmål (${score}%)`;
+        }
         
         document.getElementById('gameInputGroup').classList.remove('active');
         document.getElementById('answer').value = '';
         document.getElementById('answer').disabled = true;
-        document.getElementById('gameToggle').textContent = 'Start Nyt Spil';
-        document.getElementById('feedback').textContent = `Alle opgaver er løst! Din tid: ${finalTime}`;
+        
+        // Re-enable both buttons when game is completed
+        document.getElementById('gameToggle').disabled = false;
+        document.getElementById('practiceToggle').disabled = false;
+        
+        if (isPracticeMode) {
+            document.getElementById('practiceToggle').textContent = 'Start Ny Øvelse';
+        } else {
+            document.getElementById('gameToggle').textContent = 'Start Nyt Spil';
+        }
         
         gameActive = false;
         clearInterval(timerInterval);
@@ -326,6 +381,7 @@ function playSound(soundId) {
     sound.play().catch(() => {});
 }
 
+// Modify checkAnswer function
 function checkAnswer() {
     if (!gameActive) return;
     const userAnswer = parseInt(document.getElementById('answer').value, 10);
@@ -338,16 +394,31 @@ function checkAnswer() {
         document.getElementById('answer').value = '';
 
         playSound('correctSound');
+        if (isPracticeMode) correctAnswers++;
 
         solvedProblems++;
         updateProgress();
 
         generateQuestion();
     } else {
-        cell.classList.add('incorrect');
-        playSound('incorrectSound');
-        setTimeout(() => cell.classList.remove('incorrect'), 500);
-        document.getElementById('answer').select();
+        if (isPracticeMode) {
+            cell.textContent = currentQuestion.answer;
+            cell.classList.remove('hidden-value', 'correct');
+            cell.classList.add('incorrect', 'solved');
+            playSound('incorrectSound');
+            document.getElementById('answer').value = '';
+            
+            solvedProblems++;
+            updateProgress();
+            
+            // Move on to next cell without asking the same question again
+            generateQuestion();
+        } else {
+            cell.classList.add('incorrect');
+            playSound('incorrectSound');
+            setTimeout(() => cell.classList.remove('incorrect'), 500);
+            document.getElementById('answer').select();
+        }
     }
 }
 
