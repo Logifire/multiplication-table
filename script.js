@@ -115,10 +115,10 @@ function togglePractice() {
     isPracticeMode = true;
     if (gameActive) {
         stopGame();
-        document.getElementById('practiceToggle').textContent = 'Start Øvelse';
+        document.getElementById('practiceToggle').textContent = 'Start Træning';
     } else {
         startGame();
-        document.getElementById('practiceToggle').textContent = 'Stop Øvelse';
+        document.getElementById('practiceToggle').textContent = 'Stop Træning';
     }
 }
 
@@ -127,10 +127,10 @@ function toggleGame() {
     isPracticeMode = false;
     if (gameActive) {
         stopGame();
-        document.getElementById('gameToggle').textContent = 'Start Spillet';
+        document.getElementById('gameToggle').textContent = 'Start Tidsløb';
     } else {
         startGame();
-        document.getElementById('gameToggle').textContent = 'Stop Spillet';
+        document.getElementById('gameToggle').textContent = 'Stop Tidsløb';
     }
 }
 
@@ -192,10 +192,10 @@ function startGame() {
     });
     
     if (isPracticeMode) {
-        document.getElementById('practiceToggle').textContent = 'Stop Øvelse';
+        document.getElementById('practiceToggle').textContent = 'Stop Træning';
         document.getElementById('gameToggle').disabled = true;
     } else {
-        document.getElementById('gameToggle').textContent = 'Stop Spillet';
+        document.getElementById('gameToggle').textContent = 'Stop Tidsløb';
         document.getElementById('practiceToggle').disabled = true;
     }
     
@@ -329,9 +329,9 @@ function generateQuestion() {
         document.getElementById('practiceToggle').disabled = false;
         
         if (isPracticeMode) {
-            document.getElementById('practiceToggle').textContent = 'Start Ny Øvelse';
+            document.getElementById('practiceToggle').textContent = 'Start Ny Træning';
         } else {
-            document.getElementById('gameToggle').textContent = 'Start Nyt Spil';
+            document.getElementById('gameToggle').textContent = 'Start Nyt Tidsløb';
         }
         
         gameActive = false;
