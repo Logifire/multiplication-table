@@ -59,6 +59,20 @@ table {
     table-layout: fixed;
 }
 
+/* Add alternating row backgrounds */
+table tbody tr:nth-child(odd) {
+    background-color: rgba(108, 99, 255, 0.03);
+}
+
+table tbody tr:nth-child(even) {
+    background-color: white;
+}
+
+/* Ensure header row stays white */
+table thead tr {
+    background-color: white;
+}
+
 th, td {
     padding: 8px 4px;
     font-size: 14px;
