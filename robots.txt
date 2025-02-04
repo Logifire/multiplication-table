@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://logifire.github.io/multiplication-table/sitemap.xml
