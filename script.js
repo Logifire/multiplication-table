@@ -419,19 +419,24 @@ function checkAnswer() {
     const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${currentQuestion.row}) td:nth-child(${currentQuestion.col})`);
     const checkButton = document.querySelector('.game-input-group button');
     
-    // ...rest of the existing checkAnswer function...
     if (userAnswer === currentQuestion.answer) {
         cell.textContent = currentQuestion.answer;
         cell.classList.remove('hidden-value', 'incorrect');
         cell.classList.add('correct', 'solved');
-        document.getElementById('answer').value = '';
+        
+        // Add success indication
+        answer.classList.add('success');
+        setTimeout(() => {
+            answer.classList.remove('success');
+        }, 600);
 
+        document.getElementById('answer').value = '';
         playSound('correctSound');
         if (isPracticeMode) correctAnswers++;
-
+        
         solvedProblems++;
         updateProgress();
-
+        
         generateQuestion();
     } else {
         cell.classList.add('incorrect');

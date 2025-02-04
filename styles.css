@@ -189,11 +189,25 @@ th:first-child label {
     box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
 }
 
+#answer.success {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-color: var(--success-color);
+    animation: successPulse 0.6s ease-in-out;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
 /* Add pulsing animation for error states */
 @keyframes errorPulse {
     0% { background-color: rgba(255, 107, 107, 0.1); }
     50% { background-color: rgba(255, 107, 107, 0.2); }
     100% { background-color: rgba(255, 107, 107, 0.1); }
+}
+
+/* Add success pulse animation */
+@keyframes successPulse {
+    0% { background-color: rgba(76, 175, 80, 0.1); }
+    50% { background-color: rgba(76, 175, 80, 0.2); }
+    100% { background-color: rgba(76, 175, 80, 0.1); }
 }
 
 /* Update feedback styles for better visibility */
