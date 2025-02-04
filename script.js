@@ -149,6 +149,7 @@ function resetGame() {
     document.getElementById('gameToggle').textContent = 'Start Spillet';
     gameActive = false;
     cellsVisible = true;
+    document.body.classList.remove('hide-cells'); // Add this line
     if (timerInterval) {
         clearInterval(timerInterval);
     }
@@ -190,6 +191,8 @@ function startGame() {
         cell.textContent = '?';
         cell.classList.add('hidden-value');
     });
+    cellsVisible = false;
+    document.body.classList.add('hide-cells'); // Add this line
     
     if (isPracticeMode) {
         document.getElementById('practiceToggle').textContent = 'Stop Træning';
@@ -542,6 +545,7 @@ function initializeTable() {
         cell.classList.remove('hidden-value');
     });
     cellsVisible = true;
+    document.body.classList.remove('hide-cells'); // Add this line
 }
 
 // Initialize cell clicks when page loads
