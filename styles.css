@@ -853,3 +853,32 @@ button.shake {
         width: calc(100% - 16px);
     }
 }
+
+.reset-stats-container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(108, 99, 255, 0.1);
+    text-align: center;
+}
+
+.reset-stats-button {
+    background-color: transparent;
+    color: var(--secondary-color);
+    border: 2px solid var(--secondary-color);
+    font-size: 14px;
+    padding: 8px 16px;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.reset-stats-button:hover {
+    opacity: 1;
+    box-shadow: 0 2px 4px rgba(255, 107, 107, 0.2);
+}
+
+@media screen and (max-width: 600px) {
+    .reset-stats-container {
+        margin-top: 15px;
+        padding-top: 15px;
+    }
+}

@@ -558,7 +558,16 @@ function initializeTable() {
     document.body.classList.remove('hide-cells'); // Add this line
 }
 
-// Initialize cell clicks when page loads
+// ...existing code...
+
+function resetStats() {
+    if (confirm('Er du sikker på at du vil nulstille alle statistikker? Dette kan ikke fortrydes.')) {
+        localStorage.removeItem(STATS_KEY);
+        updateStatsDisplay();
+        showAchievementBanner('Statistik er blevet nulstillet');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const answerInput = document.getElementById('answer');
     
@@ -605,6 +614,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Add reset stats handler
+    document.getElementById('resetStats').addEventListener('click', resetStats);
+    
     // Initial stats display
     updateStatsDisplay();
 });
