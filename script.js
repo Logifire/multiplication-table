@@ -398,22 +398,24 @@ function playSound(soundId) {
 function checkAnswer() {
     if (!gameActive) return;
     
-    const answer = document.getElementById('answer').value;
+    const answer = document.getElementById('answer');
     const feedback = document.getElementById('feedback');
     
     // Check for empty input
-    if (!answer.trim()) {
+    if (!answer.value.trim()) {
         feedback.textContent = 'Indtast et tal';
         feedback.classList.add('error');
-        document.getElementById('answer').focus();
+        answer.classList.add('error');
+        answer.focus();
         
         setTimeout(() => {
             feedback.classList.remove('error');
+            answer.classList.remove('error');
         }, 600);
         return;
     }
     
-    const userAnswer = parseInt(answer, 10);
+    const userAnswer = parseInt(answer.value, 10);
     const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${currentQuestion.row}) td:nth-child(${currentQuestion.col})`);
     const checkButton = document.querySelector('.game-input-group button');
     
@@ -433,6 +435,7 @@ function checkAnswer() {
         generateQuestion();
     } else {
         cell.classList.add('incorrect');
+        answer.classList.add('error');
         playSound('incorrectSound');
         
         // Add visual feedback for both modes
@@ -444,6 +447,7 @@ function checkAnswer() {
             cell.classList.remove('incorrect');
             checkButton.classList.remove('shake');
             feedback.classList.remove('error');
+            answer.classList.remove('error');
         }, 600);
         
         if (isPracticeMode) {

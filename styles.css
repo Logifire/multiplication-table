@@ -125,9 +125,10 @@ th:first-child label {
 }
 
 .cell.incorrect {
-    background-color: var(--secondary-color) !important;
+    background-color: rgba(255, 107, 107, 0.9) !important;
     color: white;
     transform: none;
+    animation: errorPulse 0.6s ease-in-out;
 }
 
 .cell.solved.incorrect {
@@ -178,6 +179,21 @@ th:first-child label {
     border-radius: var(--border-radius);
     text-align: center;
     margin: 10px;
+    transition: all 0.3s ease; /* Add transition for smooth effect */
+}
+
+#answer.error {
+    background-color: rgba(255, 107, 107, 0.1);
+    border-color: var(--secondary-color);
+    animation: errorPulse 0.6s ease-in-out;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+}
+
+/* Add pulsing animation for error states */
+@keyframes errorPulse {
+    0% { background-color: rgba(255, 107, 107, 0.1); }
+    50% { background-color: rgba(255, 107, 107, 0.2); }
+    100% { background-color: rgba(255, 107, 107, 0.1); }
 }
 
 /* Update feedback styles for better visibility */
@@ -205,7 +221,9 @@ th:first-child label {
 
 #feedback.error {
     color: var(--secondary-color);
-    animation: shake 0.4s ease-in-out;
+    animation: shake 0.4s ease-in-out, errorPulse 0.6s ease-in-out;
+    background-color: rgba(255, 107, 107, 0.1);
+    font-weight: bold;
 }
 
 .table-checkbox {
