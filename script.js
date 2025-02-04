@@ -384,9 +384,27 @@ function playSound(soundId) {
 // Modify checkAnswer function
 function checkAnswer() {
     if (!gameActive) return;
-    const userAnswer = parseInt(document.getElementById('answer').value, 10);
-    const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${currentQuestion.row}) td:nth-child(${currentQuestion.col})`);
     
+    const answer = document.getElementById('answer').value;
+    const feedback = document.getElementById('feedback');
+    
+    // Check for empty input
+    if (!answer.trim()) {
+        feedback.textContent = 'Indtast et tal';
+        feedback.classList.add('error');
+        document.getElementById('answer').focus();
+        
+        setTimeout(() => {
+            feedback.classList.remove('error');
+        }, 600);
+        return;
+    }
+    
+    const userAnswer = parseInt(answer, 10);
+    const cell = document.querySelector(`#multiplicationTable tbody tr:nth-child(${currentQuestion.row}) td:nth-child(${currentQuestion.col})`);
+    const checkButton = document.querySelector('.game-input-group button');
+    
+    // ...rest of the existing checkAnswer function...
     if (userAnswer === currentQuestion.answer) {
         cell.textContent = currentQuestion.answer;
         cell.classList.remove('hidden-value', 'incorrect');
@@ -401,22 +419,34 @@ function checkAnswer() {
 
         generateQuestion();
     } else {
+        cell.classList.add('incorrect');
+        playSound('incorrectSound');
+        
+        // Add visual feedback for both modes
+        checkButton.classList.add('shake');
+        feedback.textContent = 'Forkert svar - prøv igen!';
+        feedback.classList.add('error');
+        
+        setTimeout(() => {
+            cell.classList.remove('incorrect');
+            checkButton.classList.remove('shake');
+            feedback.classList.remove('error');
+        }, 600);
+        
         if (isPracticeMode) {
-            cell.textContent = currentQuestion.answer;
-            cell.classList.remove('hidden-value', 'correct');
-            cell.classList.add('incorrect', 'solved');
-            playSound('incorrectSound');
-            document.getElementById('answer').value = '';
-            
-            solvedProblems++;
-            updateProgress();
-            
-            // Move on to next cell without asking the same question again
-            generateQuestion();
+            // In practice mode, wait for the feedback animation to complete before showing answer
+            setTimeout(() => {
+                cell.textContent = currentQuestion.answer;
+                cell.classList.remove('hidden-value', 'correct');
+                cell.classList.add('incorrect', 'solved');
+                document.getElementById('answer').value = '';
+                
+                solvedProblems++;
+                updateProgress();
+                
+                generateQuestion();
+            }, 800);
         } else {
-            cell.classList.add('incorrect');
-            playSound('incorrectSound');
-            setTimeout(() => cell.classList.remove('incorrect'), 500);
             document.getElementById('answer').select();
         }
     }

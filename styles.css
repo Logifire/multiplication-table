@@ -125,8 +125,10 @@ th:first-child label {
 
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
 }
 
 #timer {
@@ -164,28 +166,32 @@ th:first-child label {
     margin: 10px;
 }
 
-/* Update feedback styles */
+/* Update feedback styles for better visibility */
 #feedback {
     font-size: 20px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative; /* Change from absolute to relative */
     padding: 10px;
     border-radius: var(--border-radius);
     transition: all 0.3s ease;
     width: 100%;
     box-sizing: border-box;
-    pointer-events: none;
     opacity: 0;
     max-width: 800px;
+    margin: 0 auto; /* Center the feedback box */
+    transform-origin: center;
+    pointer-events: none;
 }
 
 #feedback:not(:empty) {
-    position: relative;
-    background: rgba(108, 99, 255, 0.1);
-    margin: 15px 0;
     opacity: 1;
     pointer-events: auto;
+    margin: 15px auto;
+    background: rgba(108, 99, 255, 0.1);
+}
+
+#feedback.error {
+    color: var(--secondary-color);
+    animation: shake 0.4s ease-in-out;
 }
 
 .table-checkbox {
@@ -364,6 +370,10 @@ th:first-child label {
 
 button[onclick="toggleCells"] {
     margin-bottom: 20px; /* Add margin to separate from table */
+}
+
+button.shake {
+    animation: shake 0.4s ease-in-out;
 }
 
 .game-input-group {
