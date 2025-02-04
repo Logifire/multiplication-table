@@ -116,9 +116,11 @@ function togglePractice() {
     if (gameActive) {
         stopGame();
         document.getElementById('practiceToggle').textContent = 'Start Træning';
+        document.querySelector('.game-buttons').classList.remove('practice-mode');
     } else {
         startGame();
         document.getElementById('practiceToggle').textContent = 'Stop Træning';
+        document.querySelector('.game-buttons').classList.add('practice-mode');
     }
 }
 
@@ -128,9 +130,11 @@ function toggleGame() {
     if (gameActive) {
         stopGame();
         document.getElementById('gameToggle').textContent = 'Start Tidsløb';
+        document.getElementById('practiceToggle').classList.remove('hidden');
     } else {
         startGame();
         document.getElementById('gameToggle').textContent = 'Stop Tidsløb';
+        document.getElementById('practiceToggle').classList.add('hidden');
     }
 }
 
@@ -237,6 +241,10 @@ function stopGame() {
     document.getElementById('gameToggle').disabled = false;
     document.getElementById('practiceToggle').disabled = false;
     
+    // Reset button visibility
+    document.getElementById('practiceToggle').classList.remove('hidden');
+    document.querySelector('.game-buttons').classList.remove('practice-mode');
+    
     if (isPracticeMode) {
         document.getElementById('feedback').textContent = 'Øvelse afsluttet';
     }
@@ -307,7 +315,7 @@ function generateQuestion() {
         if (!isPracticeMode) {
             const endTime = Date.now();
             const totalTime = endTime - startTime;
-            saveStats(totalTime); // Save stats when game is completed
+            saveStats(totalTime);
 
             const finalTime = formatTimeFromMs(totalTime);
             document.getElementById('completionSound').play();
@@ -327,14 +335,16 @@ function generateQuestion() {
         document.getElementById('answer').value = '';
         document.getElementById('answer').disabled = true;
         
-        // Re-enable both buttons when game is completed
+        // Reset game mode buttons
         document.getElementById('gameToggle').disabled = false;
         document.getElementById('practiceToggle').disabled = false;
+        document.getElementById('practiceToggle').classList.remove('hidden');
+        document.querySelector('.game-buttons').classList.remove('practice-mode');
         
         if (isPracticeMode) {
-            document.getElementById('practiceToggle').textContent = 'Start Ny Træning';
+            document.getElementById('practiceToggle').textContent = 'Start Træning';
         } else {
-            document.getElementById('gameToggle').textContent = 'Start Nyt Tidsløb';
+            document.getElementById('gameToggle').textContent = 'Start Tidsløb';
         }
         
         gameActive = false;

@@ -810,11 +810,33 @@ button.shake {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    position: relative;
 }
 
 .game-buttons button {
     flex: 1;
     min-width: 150px;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.game-buttons button.hidden {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    pointer-events: none;
+}
+
+.game-buttons.practice-mode #gameToggle {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    pointer-events: none;
+}
+
+.game-buttons.practice-mode #practiceToggle {
+    background: linear-gradient(45deg, var(--primary-color), #8B80FF);
 }
 
 #practiceToggle {
