@@ -150,7 +150,7 @@ function resetGame() {
     document.getElementById('timer').textContent = '00:00.00';
     document.getElementById('timer').classList.remove('active');
     document.getElementById('gameInputGroup').classList.remove('active');
-    document.getElementById('gameToggle').textContent = 'Start Spillet';
+    document.getElementById('gameToggle').textContent = 'Start Tidsløb';
     gameActive = false;
     cellsVisible = true;
     document.body.classList.remove('hide-cells'); // Add this line
