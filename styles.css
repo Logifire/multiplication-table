@@ -777,25 +777,22 @@ button.shake {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 15px;
     border-bottom: 1px solid rgba(108, 99, 255, 0.1);
     animation: fadeIn 0.3s ease;
 }
 
-.stat-entry:last-child {
-    border-bottom: none;
-}
-
 .stat-info {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .stat-time {
     font-family: monospace;
-    font-size: 18px;
+    font-size: 20px;
     color: var(--primary-color);
+    font-weight: bold;
 }
 
 .stat-date {
@@ -804,8 +801,12 @@ button.shake {
 }
 
 .stat-tables {
-    font-size: 14px;
-    color: #666;
+    font-size: 16px;
+    color: var(--text-color);
+    font-weight: 500;
+    background: rgba(108, 99, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
 }
 
 .no-stats {
@@ -888,8 +889,7 @@ button.shake {
 
 .reset-stats-container {
     margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(108, 99, 255, 0.1);
+    padding-top: 10px;
     text-align: center;
 }
 

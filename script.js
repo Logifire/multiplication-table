@@ -98,7 +98,12 @@ function updateStatsDisplay() {
             }
         })
         .flat()
-        .sort((a, b) => a.time - b.time);
+        .sort((a, b) => {
+            if (activeStatsView === 'recent') {
+                return b.date - a.date; // Latest first for recent view
+            }
+            return a.time - b.time; // Fastest first for best times
+        });
 
     content.innerHTML = entries.map(stat => `
         <div class="stat-entry">
@@ -106,7 +111,7 @@ function updateStatsDisplay() {
                 <span class="stat-time">${formatTimeFromMs(stat.time)}</span>
                 <span class="stat-date">${stat.date.toLocaleDateString()}</span>
             </div>
-            <span class="stat-tables">Tabeller: ${stat.tables.join(', ')}</span>
+            <span class="stat-tables">Tabel ${stat.tables.join(', ')}</span>
         </div>
     `).join('');
 }
