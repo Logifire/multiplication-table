@@ -2,6 +2,8 @@
 
 An engaging, interactive web application designed to help children and adults practice multiplication tables in a fun and efficient way. This project was generated with the assistance of AI (GitHub Copilot) to create an optimal learning experience.
 
+🎯 **[Try it live here!](https://logifire.github.io/multiplication-table/)**
+
 ## 🌟 Features
 
 - Interactive multiplication table from 1 to 10
