@@ -27,6 +27,28 @@ let activeStatsView = 'best';
 // Add to initial state declarations
 const STREAK_KEY = 'multiplicationTableStreak';
 
+function showBestTimeBanner(time) {
+    const banner = document.createElement('div');
+    banner.className = 'best-time-banner';
+    banner.innerHTML = `
+        <h3>🏆 Ny Personlig Rekord! 🏆</h3>
+        <div class="time">${formatTimeFromMs(time)}</div>
+    `;
+    document.body.appendChild(banner);
+
+    // Add show class after a small delay for animation
+    setTimeout(() => banner.classList.add('show'), 100);
+
+    // Extra firework effect for best time
+    fireConfetti();
+
+    // Remove banner after animation
+    setTimeout(() => {
+        banner.classList.remove('show');
+        setTimeout(() => banner.remove(), 500);
+    }, 4000);
+}
+
 function saveStats(time) {
     const stats = getStats();
     const selectedTables = Array.from(document.querySelectorAll('.table-checkbox:checked'))
@@ -40,16 +62,21 @@ function saveStats(time) {
         date: new Date().toISOString(),
     };
 
+    // Check if this is a new best time
+    const isNewBest = !stats.best[tablesKey] || time < stats.best[tablesKey].time;
+
     // Add to recent times
     if (!stats.recent[tablesKey]) {
         stats.recent[tablesKey] = [];
     }
     stats.recent[tablesKey].unshift(newStat);
-    stats.recent[tablesKey] = stats.recent[tablesKey].slice(0, 5); // Keep only last 5
+    stats.recent[tablesKey] = stats.recent[tablesKey].slice(0, 5);
 
     // Update best time
-    if (!stats.best[tablesKey] || time < stats.best[tablesKey].time) {
+    if (isNewBest) {
         stats.best[tablesKey] = newStat;
+        // Show best time banner after a small delay to not conflict with completion banner
+        setTimeout(() => showBestTimeBanner(time), 1500);
     }
 
     localStorage.setItem(STATS_KEY, JSON.stringify(stats));

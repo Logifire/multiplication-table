@@ -963,3 +963,44 @@ button.shake {
         line-height: 45px;
     }
 }
+
+/* Best Time Banner */
+.best-time-banner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    color: white;
+    padding: 25px 40px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+    z-index: 1001;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.best-time-banner.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.best-time-banner .time {
+    font-size: 36px;
+    font-family: monospace;
+    font-weight: bold;
+    margin: 10px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@media screen and (max-width: 600px) {
+    .best-time-banner {
+        padding: 20px 30px;
+        width: 80%;
+    }
+    
+    .best-time-banner .time {
+        font-size: 28px;
+    }
+}
