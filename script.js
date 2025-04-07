@@ -24,6 +24,9 @@ const audioPool = new Map();
 const STATS_KEY = 'multiplicationTableStats';
 let activeStatsView = 'best';
 
+// Add to initial state declarations
+const STREAK_KEY = 'multiplicationTableStreak';
+
 function saveStats(time) {
     const stats = getStats();
     const selectedTables = Array.from(document.querySelectorAll('.table-checkbox:checked'))
@@ -442,6 +445,9 @@ function checkAnswer() {
         solvedProblems++;
         updateProgress();
         
+        // Update streak on first correct answer
+        updateStreak();
+        
         generateQuestion();
     } else {
         cell.classList.add('incorrect');
@@ -582,6 +588,59 @@ function resetStats() {
     }
 }
 
+function updateStreak() {
+    const today = new Date().toLocaleDateString();
+    const streakData = getStreakData();
+    
+    if (streakData.lastPlayed !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayString = yesterday.toLocaleDateString();
+        
+        if (streakData.lastPlayed !== yesterdayString) {
+            // Reset streak if last play wasn't yesterday
+            streakData.currentStreak = 1;
+        } else {
+            // Increment streak
+            streakData.currentStreak++;
+        }
+        streakData.lastPlayed = today;
+        localStorage.setItem(STREAK_KEY, JSON.stringify(streakData));
+    }
+    
+    updateStreakDisplay(streakData.currentStreak);
+}
+
+function getStreakData() {
+    const defaultData = { currentStreak: 0, lastPlayed: null };
+    try {
+        return JSON.parse(localStorage.getItem(STREAK_KEY)) || defaultData;
+    } catch {
+        return defaultData;
+    }
+}
+
+function updateStreakDisplay(streak) {
+    const starsContainer = document.querySelector('.streak-stars');
+    const streakInfo = document.querySelector('.streak-info');
+    
+    // Clear existing stars
+    starsContainer.innerHTML = '';
+    
+    // Add stars (max 7 stars shown)
+    const starsToShow = Math.min(streak, 7);
+    for (let i = 0; i < starsToShow; i++) {
+        const star = document.createElement('div');
+        star.innerHTML = '⭐';
+        star.className = 'star';
+        star.style.animationDelay = `${i * 100}ms`;
+        starsContainer.appendChild(star);
+    }
+    
+    // Update streak text
+    streakInfo.textContent = `${streak} ${streak === 1 ? 'dags' : 'dages'} streak`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const answerInput = document.getElementById('answer');
     
@@ -633,4 +692,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initial stats display
     updateStatsDisplay();
+    
+    // Initial streak display
+    const streakData = getStreakData();
+    updateStreakDisplay(streakData.currentStreak);
 });

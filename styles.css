@@ -914,3 +914,52 @@ button.shake {
         padding-top: 15px;
     }
 }
+
+/* Streak Styles */
+.streak-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 16px rgba(108, 99, 255, 0.1);
+    text-align: center;
+}
+
+.streak-container h2 {
+    color: var(--primary-color);
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.streak-stars {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+    min-height: 40px;
+}
+
+.star {
+    width: 60px;  /* Increased from 40px */
+    height: 60px; /* Increased from 40px */
+    font-size: 48px; /* Add explicit font size */
+    line-height: 60px; /* Match height for vertical centering */
+    color: #FFD700; /* Brighter gold color */
+    animation: pop 0.3s ease;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2)); /* Enhanced shadow */
+}
+
+@media screen and (max-width: 600px) {
+    .streak-container {
+        margin: 15px auto;
+        padding: 15px;
+    }
+    
+    .star {
+        width: 45px;  /* Increased from 30px */
+        height: 45px; /* Increased from 30px */
+        font-size: 36px; /* Adjusted font size for mobile */
+        line-height: 45px;
+    }
+}
