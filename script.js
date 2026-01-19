@@ -724,3 +724,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const streakData = getStreakData();
     updateStreakDisplay(streakData.currentStreak);
 });
+
+// Register Service Worker for PWA functionality
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
